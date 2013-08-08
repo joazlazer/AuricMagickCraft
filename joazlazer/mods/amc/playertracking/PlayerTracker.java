@@ -4,6 +4,7 @@ import java.lang.ref.WeakReference;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
+import joazlazer.mods.amc.AuricMagickCraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import cpw.mods.fml.common.IPlayerTracker;
@@ -68,12 +69,19 @@ public class PlayerTracker implements IPlayerTracker {
         }
         stats.orderUnlocName = saves.getString("orderUnlocName");
         stats.showAuraRosary = saves.getBoolean("showAuraRosary");
+        
+        // Print debug info.
+        if (AuricMagickCraft.debugMode) {
+        	System.out.println("Player " + player.username + " has just logged on with AMC player tracker.");
+        }
 	}
 
 	@Override
 	public void onPlayerLogout(EntityPlayer player) {
-		// TODO Auto-generated method stub
-
+		// Print debug info.
+        if (AuricMagickCraft.debugMode) {
+        	System.out.println("Player " + player.username + " has just logged out with AMC player tracker.");
+        }
 	}
 
 	@Override

@@ -13,6 +13,7 @@ import joazlazer.mods.amc.lib.Reference;
 import joazlazer.mods.amc.network.PacketHandler;
 import joazlazer.mods.amc.orders.ModOrders;
 import joazlazer.mods.amc.orders.OrderRegistry;
+import joazlazer.mods.amc.playertracking.PlayerTracker;
 import joazlazer.mods.amc.spells.ModSpells;
 import joazlazer.mods.amc.spells.SpellRegistry;
 import net.minecraft.creativetab.CreativeTabs;
@@ -25,6 +26,7 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkMod;
+import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 
 
@@ -114,6 +116,9 @@ public class AuricMagickCraft
     {
     	// Initialize the specialties.
     	SpellRegistry.initSpecialties();
+    	
+    	// Register the player tracker.
+    	GameRegistry.registerPlayerTracker(new PlayerTracker());
     }
     
     // The method used to get everything from the config.
