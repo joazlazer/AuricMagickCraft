@@ -3,7 +3,6 @@ package joazlazer.mods.amc.playertracking;
 import java.lang.ref.WeakReference;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
-
 import joazlazer.mods.amc.AuricMagickCraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -20,7 +19,7 @@ public class PlayerTracker implements IPlayerTracker {
 		NBTTagCompound tags = player.getEntityData();
 		
 		// If the tags don't have the tag,
-        if (!tags.hasKey("TConstruct"))
+        if (!tags.hasKey("AMC"))
         {
         	// The create it.
             tags.setCompoundTag("AMC", new NBTTagCompound());
@@ -66,9 +65,17 @@ public class PlayerTracker implements IPlayerTracker {
         	}
         	// Bit shift the color.
         	stats.auraColor = ((red << 16) + (green << 8) + blue);
+        	
+        	// Print debug info.
+            if (AuricMagickCraft.debugMode) {
+            	System.out.println(" R: " + red + " G: " + green + " B: " + blue + ".");
+            }
         }
         stats.orderUnlocName = saves.getString("orderUnlocName");
         stats.showAuraRosary = saves.getBoolean("showAuraRosary");
+        
+        // Save the player's statistics.
+        playerStats.put(player.username, stats);
         
         // Print debug info.
         if (AuricMagickCraft.debugMode) {
@@ -82,17 +89,72 @@ public class PlayerTracker implements IPlayerTracker {
         if (AuricMagickCraft.debugMode) {
         	System.out.println("Player " + player.username + " has just logged out with AMC player tracker.");
         }
+        
+        savePlayerStats(player, true);
 	}
 
 	@Override
 	public void onPlayerChangedDimension(EntityPlayer player) {
-		// TODO Auto-generated method stub
+		// Print debug info.
+        if (AuricMagickCraft.debugMode) {
+        	System.out.println("Player " + player.username + " has just changed dimensions with AMC player tracker.");
+        }
+        
+        savePlayerStats(player, false);
+	}
 
+	public void savePlayerStats(EntityPlayer player, boolean clean) {
+		if (player != null)
+        {
+            AmcPlayerStats stats = getPlayerStats(player.username);
+            if (stats != null)
+            {
+            	// Save the stats.
+            	stats.saveToNBT(player.getEntityData());
+                if (clean)
+                    playerStats.remove(player.username);
+            }
+        }
 	}
 
 	@Override
 	public void onPlayerRespawn(EntityPlayer player) {
-		// TODO Auto-generated method stub
+		// Print debug info.
+        if (AuricMagickCraft.debugMode) {
+        	System.out.println("Player " + player.username + " has just respawned with AMC player tracker.");
+        }
+        
+        // Revalidate the entity data.
+        AmcPlayerStats stats = getPlayerStats(player.username);
+        stats.player = new WeakReference<EntityPlayer>(player);
 
+        NBTTagCompound saves = player.getEntityData();
+        stats.saveToNBT(saves);
 	}
+	
+	/* Find the right player */
+    public AmcPlayerStats getPlayerStats (String username)
+    {
+    	AmcPlayerStats stats = playerStats.get(username);
+        System.out.println("Stats: " + stats);
+        if (stats == null)
+        {
+            stats = new AmcPlayerStats();
+            playerStats.put(username, stats);
+        }
+        return stats;
+    }
+
+    public EntityPlayer getEntityPlayer (String username)
+    {
+    	AmcPlayerStats stats = playerStats.get(username);
+        if (stats == null)
+        {
+            return null;
+        }
+        else
+        {
+            return stats.player.get();
+        }
+    }
 }

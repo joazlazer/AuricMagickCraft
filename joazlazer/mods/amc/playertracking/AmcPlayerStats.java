@@ -2,6 +2,7 @@ package joazlazer.mods.amc.playertracking;
 
 import java.lang.ref.WeakReference;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
 
 public class AmcPlayerStats {
 	public WeakReference<EntityPlayer> player;
@@ -11,4 +12,7 @@ public class AmcPlayerStats {
 	public String orderUnlocName;
 	public boolean isAwake;
 	public boolean showAuraRosary;
+	public void saveToNBT(NBTTagCompound entityData) {
+		System.out.println("Saving!");
+	}
 }
