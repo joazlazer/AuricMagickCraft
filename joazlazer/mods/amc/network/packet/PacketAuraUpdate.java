@@ -48,12 +48,10 @@ public class PacketAuraUpdate extends AmcClientPacket {
 		switch (type) {
 			case COUNT: {
 				AuricMagickCraft.playerTracker.playerStats.get(Minecraft.getMinecraft().thePlayer.username).aura = data0;
-				System.out.println("count:  " + data0);
 				break;
 			}
 			case LEVEL: {
 				AuricMagickCraft.playerTracker.playerStats.get(Minecraft.getMinecraft().thePlayer.username).auraLevel = data0;
-				System.out.println("level = " + data0);
 				break;
 			}
 			case COLOR: {

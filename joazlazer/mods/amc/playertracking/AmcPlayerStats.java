@@ -14,8 +14,24 @@ public class AmcPlayerStats {
 	public boolean showAuraRosary;
 	public float auraIncrement;
 	public float auraIncBuffer;
-	public void saveToNBT(NBTTagCompound entityData) {
-		System.out.println("Saving!");
+	public void saveToNBT() {
+		
+		// Get the player's data.
+		NBTTagCompound tags = player.get().getEntityData();
+		
+		// Save all of the variables to NBT.
+        NBTTagCompound saves = new NBTTagCompound();
+        saves.setBoolean("isAwake", isAwake);
+        saves.setInteger("auraCount",  aura);
+        saves.setInteger("auraLevel", auraLevel);
+        saves.setInteger("auraIncBuffer", (int) (auraIncBuffer * 1000.0F));
+        saves.setInteger("auraColor", auraColor);
+        saves.setString("orderUnlocName", orderUnlocName);
+        saves.setBoolean("showAuraRosary", showAuraRosary);
+        
+        // Set the amc player tracker tag in the NBT 
+        // of the player to the newly created one.
+        tags.setCompoundTag("AMC", saves);
 	}
 	public static int getMaxAura(int level, int auraColor) {
 		int coeff = 4;

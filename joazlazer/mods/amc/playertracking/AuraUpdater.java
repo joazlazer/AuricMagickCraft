@@ -56,7 +56,6 @@ public class AuraUpdater implements IScheduledTickHandler {
 						(EntityPlayerMP) AuricMagickCraft.playerTracker.
 						playerStats.get(MinecraftServer.getServer().
 								getAllUsernames()[i]).player.get());
-				System.out.println("aura_inc = " + stats.auraIncrement);
 			}
 		}
 	}

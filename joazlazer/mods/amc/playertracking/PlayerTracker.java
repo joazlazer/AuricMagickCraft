@@ -121,7 +121,7 @@ public class PlayerTracker implements IPlayerTracker {
             if (stats != null)
             {
             	// Save the stats.
-            	stats.saveToNBT(player.getEntityData());
+            	stats.saveToNBT();
                 if (remove)
                     playerStats.remove(player.username);
             }
@@ -139,8 +139,7 @@ public class PlayerTracker implements IPlayerTracker {
         AmcPlayerStats stats = getPlayerStats(player.username);
         stats.player = new WeakReference<EntityPlayer>(player);
 
-        NBTTagCompound saves = player.getEntityData();
-        stats.saveToNBT(saves);
+        stats.saveToNBT();
 	}
 	
 	/* Find the right player */
@@ -172,7 +171,7 @@ public class PlayerTracker implements IPlayerTracker {
     	// Make sure we contain the given username.
 	 	if (playerStats.containsKey(username)) {
 	 		// Set the different data.
-	 		playerStats.get(username).aura = 0; // AmcPlayerStats.getMaxAura(1);
+	 		playerStats.get(username).aura = AmcPlayerStats.getMaxAura(1, playerStats.get(username).auraColor);
 	 		playerStats.get(username).auraLevel = 1;
 	 		playerStats.get(username).isAwake = true;
 	 		playerStats.get(username).orderUnlocName = orderUnlocName2;
