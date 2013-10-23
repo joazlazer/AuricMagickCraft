@@ -78,10 +78,10 @@ public class GuiAuraHUD extends Gui {
 		rosaryY = screenCentY - rosaryCentY;
 		
 		// Calculate the percent of aura by using a fraction of current aura and max aura.
-		double percent = auraCount / AmcPlayerStats.getMaxAura(auraLevel, AuricMagickCraft.playerTracker.getPlayerStats(this.mc.thePlayer.username).auraColor);
+		float percent = ((float) auraCount) / ( (float) AmcPlayerStats.getMaxAura(auraLevel, AuricMagickCraft.playerTracker.getPlayerStats(this.mc.thePlayer.username).auraColor));
 		
 		// Calculate the number of rosaries to draw.
-		int rosaryCount = (int) Math.nextUp(percent * ROSARY_ICONS_COUNT);
+		int rosaryCount = (int) Math.nextUp(percent * ((float) ROSARY_ICONS_COUNT));
 		
 		// Make sure the number of rosary petals to draw isn't greater than the maximum.
 		if (rosaryCount > ROSARY_ICONS_COUNT) rosaryCount = ROSARY_ICONS_COUNT;
