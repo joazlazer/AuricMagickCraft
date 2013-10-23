@@ -1,9 +1,8 @@
 package joazlazer.mods.amc.client.gui;
 
 import joazlazer.mods.amc.AuricMagickCraft;
-import joazlazer.mods.amc.entity.player.ClientPlayerTracker;
-import joazlazer.mods.amc.entity.player.ClientPlayerTrackerUnit;
 import joazlazer.mods.amc.lib.Textures;
+import joazlazer.mods.amc.playertracking.AmcPlayerStats;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
@@ -44,21 +43,18 @@ public class GuiAuraHUD extends Gui {
 	
 	@ForgeSubscribe(priority = EventPriority.NORMAL)
 	public void onRenderExperienceBar(RenderGameOverlayEvent e) {
-		// Assert that the player has loaded to prevent crashes.
-		ClientPlayerTracker.instance.assertPlayer();
-		
 		// Make sure we are rendering AFTER the CROSSHAIR and are AWAKE and we SHOULD render the rosary.
 		if (e.isCancelable() || e.type != ElementType.CROSSHAIRS || 
-				!ClientPlayerTracker.instance.getPlayer().isAwake ||
-				!ClientPlayerTracker.instance.getPlayer().showAuraRosary)
+				!AuricMagickCraft.playerTracker.getPlayerStats(this.mc.thePlayer.username).isAwake ||
+				!AuricMagickCraft.playerTracker.getPlayerStats(this.mc.thePlayer.username).showAuraRosary)
 		{
 			// If not, then return.
 			return;
 		}
 		
-		this.auraColor = ClientPlayerTracker.instance.getPlayer().auricColor;
-		this.auraCount = ClientPlayerTracker.instance.getPlayer().aura;
-		this.auraLevel = ClientPlayerTracker.instance.getPlayer().auricLevel;
+		this.auraColor = AuricMagickCraft.playerTracker.getPlayerStats(this.mc.thePlayer.username).auraColor;
+		this.auraCount = AuricMagickCraft.playerTracker.getPlayerStats(this.mc.thePlayer.username).aura;
+		this.auraLevel = AuricMagickCraft.playerTracker.getPlayerStats(this.mc.thePlayer.username).auraLevel;
 		
 		// Variables
 		int screenX = 0;
@@ -82,7 +78,7 @@ public class GuiAuraHUD extends Gui {
 		rosaryY = screenCentY - rosaryCentY;
 		
 		// Calculate the percent of aura by using a fraction of current aura and max aura.
-		double percent = 1.0; //auraCount / PlayerTrackerAmcUnit.getMaxAura(auraLevel);
+		double percent = auraCount / AmcPlayerStats.getMaxAura(auraLevel, AuricMagickCraft.playerTracker.getPlayerStats(this.mc.thePlayer.username).auraColor);
 		
 		// Calculate the number of rosaries to draw.
 		int rosaryCount = (int) Math.nextUp(percent * ROSARY_ICONS_COUNT);
@@ -124,10 +120,5 @@ public class GuiAuraHUD extends Gui {
 		
 		// Reset the color.
 		GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-	}
-	
-	public void setAura(int level, int color, int aura)
-	{
-		
 	}
 }

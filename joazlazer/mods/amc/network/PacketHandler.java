@@ -10,10 +10,10 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Random;
 import joazlazer.mods.amc.AuricMagickCraft;
-import joazlazer.mods.amc.entity.player.ServerPlayerTracker;
 import joazlazer.mods.amc.lib.Strings;
 import joazlazer.mods.amc.network.packet.AmcClientPacket;
 import joazlazer.mods.amc.network.packet.AmcServerPacket;
+import joazlazer.mods.amc.network.packet.PacketAuraUpdate;
 import joazlazer.mods.amc.network.packet.PacketAwaken;
 import joazlazer.mods.amc.network.packet.PacketAwakeningFail;
 import joazlazer.mods.amc.network.packet.PacketRespawnPlayer;
@@ -48,11 +48,13 @@ public class PacketHandler implements IPacketHandler {
     	public static PacketAwaken awakenPacket;
     	public static PacketRespawnPlayer respawnPlayerPacket;
     	public static PacketAwakeningFail awakenStopPacket;
+    	public static PacketAuraUpdate auraUpdatePacket;
     	
     	static {
     		awakenPacket = new PacketAwaken();
     		respawnPlayerPacket = new PacketRespawnPlayer();
     		awakenStopPacket = new PacketAwakeningFail();
+    		auraUpdatePacket = new PacketAuraUpdate();
     	}
     }
     
@@ -60,6 +62,8 @@ public class PacketHandler implements IPacketHandler {
     	serverMap.put("AmcAwaken", INSTANCES.awakenPacket);
     	serverMap.put("AmcPlayerRespawn", INSTANCES.respawnPlayerPacket);
     	serverMap.put("AwakenFail", INSTANCES.awakenStopPacket);
+    	
+    	clientMap.put("AmcAuraUpdate", INSTANCES.auraUpdatePacket);
     }
 
     @Override

@@ -89,38 +89,38 @@ public class PacketRespawnPlayer extends AmcServerPacket {
 	        }
 	        
 	        // Set the coordinates to the calculated coordinates.
-        newX = (double)((float)chunkcoordinates1.posX + 0.5f);
-        newY = (double)((float)chunkcoordinates1.posY + 0.5f);
-        newZ = (double)((float)chunkcoordinates1.posZ + 0.5f);
+	        newX = (double)((float)chunkcoordinates1.posX + 0.5f);
+	        newY = (double)((float)chunkcoordinates1.posY + 0.5f);
+	        newZ = (double)((float)chunkcoordinates1.posZ + 0.5f);
 	        
 	        // Load the chunk.
 	        worldserver.theChunkProviderServer.loadChunk((int)entityplayermp.posX >> 4, (int)entityplayermp.posZ >> 4);
 
-        // Dismount the player.
-        entityplayermp.mountEntity((Entity)null);
+	        // Dismount the player.
+	        entityplayermp.mountEntity((Entity)null);
         
-        // Print debug text.
-		if (AuricMagickCraft.debugMode)
-		{
-			System.out.println(
-					"Respawning player to " + 
-			newX + ", " + newY + ", " + newZ + ".");
-		}
-        
-        // Teleport the player's position to the new respawn location.
-        entityplayermp.setPositionAndUpdate(newX, newY, newZ);
-        
-        // Make sure the player isn't gonna suffocate.
-        while (!worldserver.getCollidingBoundingBoxes(entityplayermp, entityplayermp.boundingBox).isEmpty())
+	        // Print debug text.
+	        if (AuricMagickCraft.debugMode)
 	        {
-        	// Set the player's new position to one up from the old one.
+	        	System.out.println(
+					"Respawning player to " + 
+					newX + ", " + newY + ", " + newZ + ".");
+	        }
+        
+	        // Teleport the player's position to the new respawn location.
+	        entityplayermp.setPositionAndUpdate(newX, newY, newZ);
+        
+	        // Make sure the player isn't gonna suffocate.
+	        while (!worldserver.getCollidingBoundingBoxes(entityplayermp, entityplayermp.boundingBox).isEmpty())
+	        {
+	        	// Set the player's new position to one up from the old one.
 	            entityplayermp.setPosition(entityplayermp.posX, entityplayermp.posY + 1.0D, entityplayermp.posZ);
 	        }
 		}
 	}
 	
 	public void send(int entityId, EntityClientPlayerMP player) {
-		ByteArrayOutputStream bos = new ByteArrayOutputStream(9);
+		ByteArrayOutputStream bos = new ByteArrayOutputStream(4);
 		DataOutputStream outputStream = new DataOutputStream(bos);
 		try {
 		        outputStream.writeInt(entityId);

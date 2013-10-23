@@ -13,12 +13,14 @@ import joazlazer.mods.amc.lib.Reference;
 import joazlazer.mods.amc.network.PacketHandler;
 import joazlazer.mods.amc.orders.ModOrders;
 import joazlazer.mods.amc.orders.OrderRegistry;
+import joazlazer.mods.amc.playertracking.AuraUpdater;
 import joazlazer.mods.amc.playertracking.PlayerTracker;
 import joazlazer.mods.amc.spells.ModSpells;
 import joazlazer.mods.amc.spells.SpellRegistry;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraftforge.common.Configuration;
 import net.minecraftforge.common.Property;
+import cpw.mods.fml.common.IScheduledTickHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.Instance;
 import cpw.mods.fml.common.SidedProxy;
@@ -32,7 +34,7 @@ import cpw.mods.fml.common.registry.LanguageRegistry;
 
 @Mod(modid = Reference.MOD_ID, name = Reference.MOD_NAME, version = Reference.VERSION)
 @NetworkMod(clientSideRequired = true, serverSideRequired = false, 
-	channels = {"AmcAwaken", "AmcPlayerRespawn", "AwakenFail"}, packetHandler = PacketHandler.class)
+	channels = {"AmcAwaken", "AmcPlayerRespawn", "AwakenFail", "AmcAuraUpdate"}, packetHandler = PacketHandler.class)
 public class AuricMagickCraft
 {
 	// Create a static instance of this class.
@@ -50,6 +52,11 @@ public class AuricMagickCraft
     
     // The creative tab used for all of the items/blocks in the mod.
     public static CreativeTabs tabsAMC = new CreativeTabAMC(CreativeTabs.getNextID(), Reference.MOD_ID);
+    
+    // The player tracker instance!
+    public static PlayerTracker playerTracker;
+
+	public static IScheduledTickHandler auraUpdater;
     	
     // The preinitialization method for the mod.
     // Used to load resources, config files, update code, etc.
@@ -84,6 +91,9 @@ public class AuricMagickCraft
         
         // Initialize the spells.
         ModSpells.initSpells();
+        
+        // Initialize the aura updater.
+        auraUpdater = new AuraUpdater();
     }
     
     // The initialization method for the mod.
@@ -103,10 +113,6 @@ public class AuricMagickCraft
         
         // Register my mod's event subscribers/handlers.
         EventHandler.registerSubs();
-        
-        // Initialize the instances of the tick handlers.
-        PlayerTrackerClientTickHandler.initInstance();
-        PlayerTrackerServerTickHandler.initInstance();
     }
     
     // The postinitialization method for the mod.
@@ -117,8 +123,11 @@ public class AuricMagickCraft
     	// Initialize the specialties.
     	SpellRegistry.initSpecialties();
     	
+    	// Initialize the player tracker.
+    	playerTracker = new PlayerTracker();
+    	
     	// Register the player tracker.
-    	GameRegistry.registerPlayerTracker(new PlayerTracker());
+    	GameRegistry.registerPlayerTracker(playerTracker);
     }
     
     // The method used to get everything from the config.

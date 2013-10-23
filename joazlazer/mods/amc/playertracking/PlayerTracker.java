@@ -4,9 +4,14 @@ import java.lang.ref.WeakReference;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import joazlazer.mods.amc.AuricMagickCraft;
-import net.minecraft.entity.player.EntityPlayer;
+import joazlazer.mods.amc.network.PacketHandler;
+import joazlazer.mods.amc.network.packet.UpdateType;
+import joazlazer.mods.amc.orders.OrderRegistry;
+import net.minecraft.entity.player.*;
 import net.minecraft.nbt.NBTTagCompound;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.IPlayerTracker;
+import cpw.mods.fml.relauncher.Side;
 
 public class PlayerTracker implements IPlayerTracker {
 
@@ -38,6 +43,8 @@ public class PlayerTracker implements IPlayerTracker {
         stats.isAwake = saves.getBoolean("isAwake");
         stats.aura = saves.getInteger("auraCount");
         stats.auraLevel = saves.getInteger("auraLevel");
+        stats.auraIncrement = saves.getInteger("auraIncrement");
+        
         if (saves.hasKey("auraColor")) {
         	stats.auraColor = saves.getInteger("auraColor");
         }
@@ -71,6 +78,15 @@ public class PlayerTracker implements IPlayerTracker {
             	System.out.println(" R: " + red + " G: " + green + " B: " + blue + ".");
             }
         }
+        
+        // Figure out the aura increment.
+        if (saves.hasKey("auraIncrement")) {
+        	stats.auraIncrement = saves.getInteger("auraIncrement");
+        }
+        else {
+        	stats.auraIncrement = 0;
+        }
+        
         stats.orderUnlocName = saves.getString("orderUnlocName");
         stats.showAuraRosary = saves.getBoolean("showAuraRosary");
         
@@ -103,7 +119,7 @@ public class PlayerTracker implements IPlayerTracker {
         savePlayerStats(player, false);
 	}
 
-	public void savePlayerStats(EntityPlayer player, boolean clean) {
+	public void savePlayerStats(EntityPlayer player, boolean remove) {
 		if (player != null)
         {
             AmcPlayerStats stats = getPlayerStats(player.username);
@@ -111,7 +127,7 @@ public class PlayerTracker implements IPlayerTracker {
             {
             	// Save the stats.
             	stats.saveToNBT(player.getEntityData());
-                if (clean)
+                if (remove)
                     playerStats.remove(player.username);
             }
         }
@@ -136,7 +152,6 @@ public class PlayerTracker implements IPlayerTracker {
     public AmcPlayerStats getPlayerStats (String username)
     {
     	AmcPlayerStats stats = playerStats.get(username);
-        System.out.println("Stats: " + stats);
         if (stats == null)
         {
             stats = new AmcPlayerStats();
@@ -156,5 +171,82 @@ public class PlayerTracker implements IPlayerTracker {
         {
             return stats.player.get();
         }
+    }
+    
+    public void awaken(String username, String orderUnlocName2) {
+    	// Make sure we contain the given username.
+	 	if (playerStats.containsKey(username)) {
+	 		// Set the different data.
+	 		playerStats.get(username).aura = 0; // AmcPlayerStats.getMaxAura(1);
+	 		playerStats.get(username).auraLevel = 1;
+	 		playerStats.get(username).isAwake = true;
+	 		playerStats.get(username).orderUnlocName = orderUnlocName2;
+	 		
+	 		// Determine what side we're on.
+	        if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
+	        	if (AuricMagickCraft.debugMode) { System.out.println("We are on the client side when we awoken"); }
+	        }
+	        else {
+	        	if (AuricMagickCraft.debugMode) { System.out.println("We are on the server side when we awoken"); }
+	        	EntityPlayerMP player = (EntityPlayerMP) playerStats.get(username).player.get();
+	        	AmcPlayerStats stats = playerStats.get(username);
+	        	updateToClient(UpdateType.COUNT, stats.aura, 0, 0, player);
+	        	updateToClient(UpdateType.LEVEL, stats.auraLevel, 0, 0, player);
+	        	updateToClient(UpdateType.IS_AWAKE, 1, 0, 0, player);
+	        	updateToClient(UpdateType.ORDER_ID, OrderRegistry.getOrder(orderUnlocName2).getId(), 0, 0, player);
+	        	updateToClient(UpdateType.COLOR, stats.auraColor, 0, 0, player);
+	        	updateToClient(UpdateType.SHOW_ROSARY, 1, 0, 0, player);
+	        }
+	 	}
+    }
+    
+    public void updateToClient(UpdateType type, int p1, int p2, int p3, EntityPlayerMP player) {
+    	AmcPlayerStats stats = playerStats.get(player.username);
+    	float inc;
+    	switch (type) {
+    		case LEVEL: {
+    			switch (stats.auraColor) {
+    				case 0x000000: {
+    					// Black Aura Color
+    					// 0.1%
+    					//inc = (0.001F) * (AmcPlayerStats.getMaxAura(p1, playerStats.get(player.username).auraColor));
+    					//playerStats.get(player.username).auraIncrement = inc;
+    			    	//PacketHandler.INSTANCES.auraUpdatePacket.send(UpdateType.AURA_INC, (int) (inc * 1000.0F), 0, 0, player);
+    					break;
+    				}
+    				case 0xE8D500: {
+    					// Gold Aura Color
+    					// 0.025%
+    					//inc = (0.00025F) * (AmcPlayerStats.getMaxAura(p1, playerStats.get(player.username).auraColor));
+    					//playerStats.get(player.username).auraIncrement = inc;
+    			    	//PacketHandler.INSTANCES.auraUpdatePacket.send(UpdateType.AURA_INC, (int) (inc * 1000.0F), 0, 0, player);
+    					break;
+    				}
+    				case 0xF9F7F2: {
+    					// Silver Aura Color
+    					// 0.1%
+    					//inc = (0.001F) * (AmcPlayerStats.getMaxAura(p1, playerStats.get(player.username).auraColor));
+    					//playerStats.get(player.username).auraIncrement = inc;
+    			    	//PacketHandler.INSTANCES.auraUpdatePacket.send(UpdateType.AURA_INC, (int) (inc * 1000.0F), 0, 0, player);
+    					break;
+    				}
+    				default: {
+    					// Anything else
+    					// 0.05 %
+    					//inc = (0.0005F) * (AmcPlayerStats.getMaxAura(p1, playerStats.get(player.username).auraColor));
+    					//playerStats.get(player.username).auraIncrement = inc;
+    			    	//PacketHandler.INSTANCES.auraUpdatePacket.send(UpdateType.AURA_INC, (int) (inc * 1000.0F), 0, 0, player);
+    					break;
+    				}
+    			}
+				updateToClient(UpdateType.AURA_INC, 2000, 0, 0, player);
+				AmcPlayerStats newStats = playerStats.get(player.username);
+				newStats.auraIncrement = 2;
+				playerStats.put(player.username, newStats);
+				if (AuricMagickCraft.debugMode) System.out.println("Setting aurInc: " + playerStats.get(player.username).auraIncrement + " for " + player.username + ".");
+    			break;
+    		}
+    	}
+    	PacketHandler.INSTANCES.auraUpdatePacket.send(type, p1, p2, p3, player);
     }
 }

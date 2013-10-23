@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import joazlazer.mods.amc.AuricMagickCraft;
-import joazlazer.mods.amc.entity.player.ServerPlayerTracker;
 import joazlazer.mods.amc.orders.OrderBase;
 import joazlazer.mods.amc.orders.OrderRegistry;
 import net.minecraft.client.entity.EntityClientPlayerMP;
@@ -67,7 +66,7 @@ public class PacketAwaken extends AmcServerPacket {
 		}
 		
 		// Awaken the player with the new order.
-		ServerPlayerTracker.instance.awaken(username, orderUnlocName);
+		AuricMagickCraft.playerTracker.awaken(username, orderUnlocName);
 	}
 	
 	public void send(int entityId, int orderId, EntityClientPlayerMP player) {
