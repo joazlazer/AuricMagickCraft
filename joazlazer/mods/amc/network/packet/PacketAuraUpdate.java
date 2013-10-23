@@ -44,18 +44,6 @@ public class PacketAuraUpdate extends AmcClientPacket {
 			if (types[i].ordinal() == (int) typeNumb) type = types[i];
 		}
 		
-		if (type != null) {
-			// Print debug text.
-			if (AuricMagickCraft.debugMode) {
-				//System.out.println("Recieved aura update packet of type " + type.toString());
-			}
-		} else {
-			// Print debug text.
-			if (AuricMagickCraft.debugMode) {
-				//System.out.println("Error! Received aura update packet with an invalid type! Type: " + typeNumb);
-			}
-		}
-		
 		// Switch through the different change types.
 		switch (type) {
 			case COUNT: {
@@ -84,11 +72,6 @@ public class PacketAuraUpdate extends AmcClientPacket {
 			case ORDER_ID: {
 				AuricMagickCraft.playerTracker.playerStats.get(Minecraft.getMinecraft().thePlayer.username).orderUnlocName = OrderRegistry.getOrder(data0).getUnlocName();
 			}
-			case AURA_INC: {
-				AuricMagickCraft.playerTracker.playerStats.get(Minecraft.getMinecraft().thePlayer.username).auraIncrement = (float) data0 / 1000.0f;
-				if (AuricMagickCraft.debugMode) System.out.println("Received packet on client w/ aura increment being " + (data0 / 1000.0F) + ".");
-				break;
-			}
 			case AURA_INC_BUFF: { 
 				AuricMagickCraft.playerTracker.playerStats.get(Minecraft.getMinecraft().thePlayer.username).auraIncBuffer = (float) data0 / 1000.0f;
 				break;
@@ -114,14 +97,5 @@ public class PacketAuraUpdate extends AmcClientPacket {
 		packet.data = bos.toByteArray();
 		packet.length = bos.size();
 		PacketDispatcher.sendPacketToPlayer(packet, (Player) player);
-		
-		// Print debug text.
-		if (AuricMagickCraft.debugMode)
-		{
-			//System.out.println("Sent player update packet to the client of " + player.username + ".");
-		}
-		if (type == UpdateType.AURA_INC && AuricMagickCraft.debugMode) {
-    		System.out.println("Updating aura increment to " + data0);
-    	}
 	}
 }

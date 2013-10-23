@@ -43,7 +43,7 @@ public class PlayerTracker implements IPlayerTracker {
         stats.isAwake = saves.getBoolean("isAwake");
         stats.aura = saves.getInteger("auraCount");
         stats.auraLevel = saves.getInteger("auraLevel");
-        stats.auraIncrement = saves.getInteger("auraIncrement");
+        stats.auraIncBuffer = ((float) saves.getInteger("auraIncBuffer") / 1000.0F);
         
         if (saves.hasKey("auraColor")) {
         	stats.auraColor = saves.getInteger("auraColor");
@@ -80,12 +80,7 @@ public class PlayerTracker implements IPlayerTracker {
         }
         
         // Figure out the aura increment.
-        if (saves.hasKey("auraIncrement")) {
-        	stats.auraIncrement = saves.getInteger("auraIncrement");
-        }
-        else {
-        	stats.auraIncrement = 0;
-        }
+        stats.auraIncrement = 0.5F;
         
         stats.orderUnlocName = saves.getString("orderUnlocName");
         stats.showAuraRosary = saves.getBoolean("showAuraRosary");
@@ -203,50 +198,7 @@ public class PlayerTracker implements IPlayerTracker {
     public void updateToClient(UpdateType type, int p1, int p2, int p3, EntityPlayerMP player) {
     	AmcPlayerStats stats = playerStats.get(player.username);
     	float inc;
-    	switch (type) {
-    		case LEVEL: {
-    			switch (stats.auraColor) {
-    				case 0x000000: {
-    					// Black Aura Color
-    					// 0.1%
-    					//inc = (0.001F) * (AmcPlayerStats.getMaxAura(p1, playerStats.get(player.username).auraColor));
-    					//playerStats.get(player.username).auraIncrement = inc;
-    			    	//PacketHandler.INSTANCES.auraUpdatePacket.send(UpdateType.AURA_INC, (int) (inc * 1000.0F), 0, 0, player);
-    					break;
-    				}
-    				case 0xE8D500: {
-    					// Gold Aura Color
-    					// 0.025%
-    					//inc = (0.00025F) * (AmcPlayerStats.getMaxAura(p1, playerStats.get(player.username).auraColor));
-    					//playerStats.get(player.username).auraIncrement = inc;
-    			    	//PacketHandler.INSTANCES.auraUpdatePacket.send(UpdateType.AURA_INC, (int) (inc * 1000.0F), 0, 0, player);
-    					break;
-    				}
-    				case 0xF9F7F2: {
-    					// Silver Aura Color
-    					// 0.1%
-    					//inc = (0.001F) * (AmcPlayerStats.getMaxAura(p1, playerStats.get(player.username).auraColor));
-    					//playerStats.get(player.username).auraIncrement = inc;
-    			    	//PacketHandler.INSTANCES.auraUpdatePacket.send(UpdateType.AURA_INC, (int) (inc * 1000.0F), 0, 0, player);
-    					break;
-    				}
-    				default: {
-    					// Anything else
-    					// 0.05 %
-    					//inc = (0.0005F) * (AmcPlayerStats.getMaxAura(p1, playerStats.get(player.username).auraColor));
-    					//playerStats.get(player.username).auraIncrement = inc;
-    			    	//PacketHandler.INSTANCES.auraUpdatePacket.send(UpdateType.AURA_INC, (int) (inc * 1000.0F), 0, 0, player);
-    					break;
-    				}
-    			}
-				updateToClient(UpdateType.AURA_INC, 2000, 0, 0, player);
-				AmcPlayerStats newStats = playerStats.get(player.username);
-				newStats.auraIncrement = 2;
-				playerStats.put(player.username, newStats);
-				if (AuricMagickCraft.debugMode) System.out.println("Setting aurInc: " + playerStats.get(player.username).auraIncrement + " for " + player.username + ".");
-    			break;
-    		}
-    	}
+    	switch (type) { }
     	PacketHandler.INSTANCES.auraUpdatePacket.send(type, p1, p2, p3, player);
     }
 }

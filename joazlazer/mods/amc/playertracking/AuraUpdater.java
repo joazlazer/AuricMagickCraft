@@ -57,7 +57,6 @@ public class AuraUpdater implements IScheduledTickHandler {
 						playerStats.get(MinecraftServer.getServer().
 								getAllUsernames()[i]).player.get());
 				System.out.println("aura_inc = " + stats.auraIncrement);
-				System.out.println("aura_inc_buff = " + stats.auraIncBuffer);
 			}
 		}
 	}
