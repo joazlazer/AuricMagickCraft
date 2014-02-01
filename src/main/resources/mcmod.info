@@ -1,0 +1,16 @@
+[
+{
+  "modid": "AMC",
+  "name": "Auric Magick Craft",
+  "description": "A magic RPG mod based off of other mods, combined with ideas and inspiration from many fantasy book series.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authors":  [ "joazlazer",  "Boom_Doom2"] ,
+  "credits": "Thanks to all the helpful people making tutorials online and helping people out on IRC.",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
