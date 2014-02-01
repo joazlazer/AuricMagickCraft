@@ -36,7 +36,6 @@ public class GuiHandler implements IGuiHandler {
 		{
 			TileEntity te = world.func_147438_o(x, y, z);
 			if (te != null && te instanceof TileEntityAwakeningTable) {
-				AMCLogger.debugLog("GuiHandler has been called :)");
 				return new GuiAwakeningTable(player.inventory, (TileEntityAwakeningTable)te);
 			}
 		}

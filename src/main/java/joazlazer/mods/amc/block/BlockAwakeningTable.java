@@ -90,8 +90,10 @@ public class BlockAwakeningTable extends BlockAmcContainer {
         	if (!world.isRemote) {
         		final TileEntityAwakeningTable awakeningTableTile = (TileEntityAwakeningTable) world.func_147438_o(x, y, z);
 
-                if (awakeningTableTile != null) 
+                if (awakeningTableTile != null) {
                 	player.openGui(AuricMagickCraft.instance, GuiIds.AWAKENING_TABLE, world, x, y, z);
+                }
+                	
                 else AMCLogger.log(Level.ERROR, "Tile is null");
         		
         	}
@@ -103,5 +105,10 @@ public class BlockAwakeningTable extends BlockAmcContainer {
 	@Override
 	public TileEntity func_149915_a(World var1, int var2) {
 		return new TileEntityAwakeningTable(var1);
+	}
+	
+	@Override
+	public boolean hasTileEntity(int meta) {
+		return true;
 	}
 }

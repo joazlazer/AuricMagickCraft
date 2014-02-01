@@ -1,5 +1,8 @@
 package joazlazer.mods.amc.tileentity;
 
+import org.apache.logging.log4j.Level;
+
+import joazlazer.mods.amc.AMCLogger;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -16,7 +19,7 @@ public class TileEntityAwakeningTable extends TileEntityAMC implements IInventor
 	@Override
     public void func_145841_b(NBTTagCompound tag)
     {
-        super.func_145839_a(tag);
+        super.func_145841_b(tag);
     }
     
     @Override

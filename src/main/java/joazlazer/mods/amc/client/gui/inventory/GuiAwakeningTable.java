@@ -18,7 +18,6 @@ public class GuiAwakeningTable extends GuiAmcContainer {
 	public GuiAwakeningTable(InventoryPlayer playerInv,
 			TileEntityAwakeningTable table) {
 		super(new ContainerAwakeningTable(playerInv, table));
-		AMCLogger.debugLog("A new instance of GuiAwakeningTable has been created. :)");
 		
 		// Set the table to the current one.
 		this.table = table;
