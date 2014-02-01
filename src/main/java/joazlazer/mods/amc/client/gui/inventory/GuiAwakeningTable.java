@@ -20,31 +20,29 @@ public class GuiAwakeningTable extends GuiAmcContainer {
 		super(new ContainerAwakeningTable(playerInv, table));
 		AMCLogger.debugLog("A new instance of GuiAwakeningTable has been created. :)");
 		
-		// Set the x size and the y size to the correct sizes.
-		field_146294_l = 256;
-		field_146295_m = 144;
-		
 		// Set the table to the current one.
 		this.table = table;
+		
+		field_146999_f = 256;
+		field_147000_g = 144;
 	}
 
 	public void func_146280_a(Minecraft p_146280_1_, int p_146280_2_, int p_146280_3_)
     {
 		super.func_146280_a(p_146280_1_, p_146280_2_, p_146280_3_);
-		field_146294_l = 256;
-		field_146295_m = 144;
     }
 	
 	@Override
 	protected void func_146976_a(float var1, int var2, int var3) {
 		// Reset the current color.
-		GL11.glColor4f(1, 1, 1, 1);
+		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		
 		// Bind the texture.
 		Minecraft.getMinecraft().getTextureManager().bindTexture(Textures.GUIS.AWAKENING_TABLE_BACKGROUND);
 		
-		// Draw the background rectangle.
-		drawTexturedModalRect(0, 0, 0, 0, field_146294_l, field_146295_m);
+		int l = (field_146294_l - field_146999_f) / 2;
+		int i1 = (field_146295_m - field_147000_g) / 2;
+		drawTexturedModalRect(l, i1, 0, 0, field_146999_f, field_147000_g);
 	}
 
 	@Override

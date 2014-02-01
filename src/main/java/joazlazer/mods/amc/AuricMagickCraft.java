@@ -49,6 +49,8 @@ public class AuricMagickCraft
     	// Load the config options.
     	ConfigSheet.load(configFile);
     	
+    	debugMode = true;
+    	
     	// Print that we are in debug mode.
     	AMCLogger.debugLog(Level.WARN, "We are now in debug mode for AuricMagickCraft.");
     	AMCLogger.debugLog(Level.WARN, "If this was not intended, check your configuration file.");

@@ -21,7 +21,7 @@ public final class Textures
 	{
 		// ResourceLocations used for guis throughout this mod.
 		public static final ResourceLocation AWAKENING_TABLE_BACKGROUND = 
-				new ResourceLocation("amc", "textures/gui/GuiAwakeningTable.png");
+				new ResourceLocation("amc", "textures/gui/awakeningTable.png");
 		public static final ResourceLocation AURA_HUD_ICONS =
 				new ResourceLocation("amc", "textures/gui/aura.png");
 		public static final ResourceLocation SPELL_HUD_ICONS =

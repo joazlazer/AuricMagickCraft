@@ -1,5 +1,7 @@
 package joazlazer.mods.amc.block;
 
+
+import joazlazer.mods.amc.AMCLogger;
 import joazlazer.mods.amc.AuricMagickCraft;
 import joazlazer.mods.amc.lib.GuiIds;
 import joazlazer.mods.amc.lib.Strings;
@@ -14,7 +16,9 @@ import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
-import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
+
+import org.apache.logging.log4j.Level;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -82,12 +86,18 @@ public class BlockAwakeningTable extends BlockAmcContainer {
 	
 	@Override
 	public boolean func_149727_a(World world, int x, int y, int z, EntityPlayer player, int par1, float hitX, float hitY, float hitZ) {
-		if (!world.isRemote) {
-    		if (player.isSneaking()) return false;
-    		FMLNetworkHandler.openGui(player, AuricMagickCraft.instance, GuiIds.AWAKENING_TABLE, world, x, y, z);
+        if (!player.isSneaking()) {
+        	if (!world.isRemote) {
+        		final TileEntityAwakeningTable awakeningTableTile = (TileEntityAwakeningTable) world.func_147438_o(x, y, z);
 
-		}
-        return true;
+                if (awakeningTableTile != null) 
+                	player.openGui(AuricMagickCraft.instance, GuiIds.AWAKENING_TABLE, world, x, y, z);
+                else AMCLogger.log(Level.ERROR, "Tile is null");
+        		
+        	}
+        	return true;
+        }
+        return false;
 	}
 	
 	@Override
