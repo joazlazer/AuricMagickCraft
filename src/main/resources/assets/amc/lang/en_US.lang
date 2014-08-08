@@ -1,0 +1,7 @@
+tile.amc:awakeningTable.name=Awakening Table
+item.amc:awakeningCrystal.name=Awakening Crystal
+tab.amc=Auric Magick Craft
+key.categories.amc=Auric Magick Craft
+key.amc.techTreeOpen=Open Tech Tree
+container.amc:orders=Orders
+container.amc:spells=Spells
