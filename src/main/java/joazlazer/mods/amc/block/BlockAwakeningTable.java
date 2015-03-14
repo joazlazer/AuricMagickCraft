@@ -34,7 +34,7 @@ public class BlockAwakeningTable extends BlockContainerAMC {
 
     @Override
     public boolean isSideSolid(IBlockAccess block, int x, int y, int z, ForgeDirection direction) {
-        if(direction == ForgeDirection.DOWN || direction == ForgeDirection.UP) return true;
+        if (direction == ForgeDirection.DOWN || direction == ForgeDirection.UP) return true;
         else return false;
     }
 
@@ -53,10 +53,10 @@ public class BlockAwakeningTable extends BlockContainerAMC {
     @Override
     public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer sender, int meta, float f0, float f1, float f2) {
         TileEntity te = world.getTileEntity(x, y, z);
-        if(te != null && !sender.isSneaking() && te instanceof TileEntityAwakeningTable && !world.isRemote) {
-            sender.openGui(AuricMagickCraft.instance, GuiId.AWAKENING_TABLE.ordinal(), world, x, y, z);
+        if (!sender.isSneaking() && te != null) {
+            if (!world.isRemote)
+                sender.openGui(AuricMagickCraft.instance, GuiId.AWAKENING_TABLE.ordinal(), world, x, y, z);
             return true;
-        }
-        else return false;
+        } else return false;
     }
 }

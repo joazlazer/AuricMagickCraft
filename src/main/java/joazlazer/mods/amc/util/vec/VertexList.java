@@ -32,7 +32,7 @@ public class VertexList extends ArrayList<Vertex2D> {
             tess.setColorRGBA(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
             for(Vertex2D v : this) {
                 tess.addVertex(v.getX(), v.getY(), zLevel);
-                System.out.println(v.getX() + ", " + v.getY());
+                //System.out.println(v.getX() + ", " + v.getY());
             }
             tess.draw();
         }

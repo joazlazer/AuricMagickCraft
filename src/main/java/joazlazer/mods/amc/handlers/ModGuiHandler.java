@@ -13,7 +13,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
 @GameRegistry.ObjectHolder(Reference.MOD_ID)
-public class GuiHandlerAMC implements IGuiHandler {
+public class ModGuiHandler implements IGuiHandler {
 
     @Override
     public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {

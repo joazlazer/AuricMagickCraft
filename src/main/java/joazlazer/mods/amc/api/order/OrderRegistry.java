@@ -1,17 +1,14 @@
 package joazlazer.mods.amc.api.order;
 
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.*;
 import joazlazer.mods.amc.util.LogHelper;
-import org.apache.logging.log4j.Level;
 
 public class OrderRegistry {
 	
 	/**
 	 * The global orders HashTable variable.
 	 */
-	private static Hashtable<String, ArrayList<Object >> orders;
+	private static HashMap<String, ArrayList<Object >> orders;
 	
 	/**
 	 * Initialize the static list. 
@@ -19,7 +16,7 @@ public class OrderRegistry {
 	public static void initOrderMap() {
 		
 		// Called by the main mod class.
-		orders = new Hashtable<String, ArrayList<Object>>();
+		orders = new HashMap<String, ArrayList<Object>>();
 	}
 	
 	/**
@@ -86,22 +83,22 @@ public class OrderRegistry {
 	
 	/**
 	 * A method that returns an enumerator for the mod ids.
-	 * @return The enumeration of the modids.
+	 * @return The Iterator of the modids.
 	 */
-	public static Enumeration<String> getModIdsEnumerator()
+	public static Iterator<String> getModIdsIterator()
 	{
-		// Return the enumeration for the keys (modids).
-		return orders.keys();
+		// Return the Iterator for the keys (modids).
+		return orders.keySet().iterator();
 	}
 	
 	/**
 	 * A method that returns an enumerator for the order classes.
-	 * @return The enumeration of the different lists of orders.
+	 * @return The Iterator of the different lists of orders.
 	 */
-	public static Enumeration<ArrayList<Object>> getOrdersEnumerator()
+	public static Iterator<ArrayList<Object>> getOrdersIterator()
 	{
-		// Return the enumeration for the elements (Lists of order classes).
-		return orders.elements();
+		// Return the Iterator for the elements (Lists of order classes).
+		return orders.values().iterator();
 	}
 	
 	/**
@@ -125,11 +122,11 @@ public class OrderRegistry {
 		// Create a OrderBase variable that will eventually be returned.
 		OrderBase end = null;
 		
-		// Enumerate through the different mod ids with at least one order.
-		for (Enumeration<String> e = getModIdsEnumerator(); e.hasMoreElements();)
+		// Iterate through the different mod ids with at least one order.
+		for (Iterator<String> iterator = getModIdsIterator(); iterator.hasNext();)
 		{
 			// Iterate through the objects.
-			for (Object obj : orders.get(e.nextElement()))
+			for (Object obj : orders.get(iterator.next()))
 			{
 				// If the current order/s unlocalizedName
 				// is equal to the one wanted, return it.
@@ -257,10 +254,10 @@ public class OrderRegistry {
             // Create a success variable.
             boolean success = false;
 
-            // Enumerate through all of the mods.
-            for (Enumeration<String> e = getModIdsEnumerator(); e.hasMoreElements(); ) {
+            // Iterate through all of the mods.
+            for (Iterator<String> iterator = getModIdsIterator(); iterator.hasNext(); ) {
                 // Create a new String to store the modid.
-                String modidCurrent = (String) e.nextElement();
+                String modidCurrent = (String) iterator.next();
 
                 // Iterate through the orders.
                 for (int i = 0; i < orders.get(modidCurrent).size(); i++) {
@@ -325,11 +322,11 @@ public class OrderRegistry {
 		// Create a new ending variable.
 		ArrayList<Object> end = new ArrayList<Object>();
 		
-		// Enumerate through all of the mods.
-		for (Enumeration<String> e = getModIdsEnumerator(); e.hasMoreElements();)
+		// Iterate through all of the mods.
+		for (Iterator<String> iterator = getModIdsIterator(); iterator.hasNext();)
 		{
 			// Create a new String to store the modid.
-			String modid = (String) e.nextElement();
+			String modid = (String) iterator.next();
 			
 			// Iterate through the orders.
 			for (Object obj : orders.get(modid))
@@ -351,11 +348,11 @@ public class OrderRegistry {
 	 */
 	public static void setOrder(String unlocName, Object newOrder)
 	{
-		// Enumerate through all of the mods.
-		for (Enumeration<String> e = getModIdsEnumerator(); e.hasMoreElements();)
+		// Iterate through all of the mods.
+		for (Iterator<String> iterator = getModIdsIterator(); iterator.hasNext();)
 		{
 			// Create a new String to store the modid.
-			String modidCurrent = (String) e.nextElement();
+			String modidCurrent = (String) iterator.next();
 			
 			// Iterate through the orders.
 			for (int i = 0; i < orders.get(modidCurrent).size(); i++)
@@ -427,7 +424,7 @@ public class OrderRegistry {
 	 * A method to get the whole orders variable.
 	 * @return The global variable 'orders'.
 	 */
-	public static Hashtable<String, ArrayList<Object>> getOrderList()
+	public static HashMap<String, ArrayList<Object>> getOrderList()
 	{
 		// Return the main orders hashtable.
 		return orders;
@@ -439,7 +436,7 @@ public class OrderRegistry {
 	 * before using.
 	 * @param newOrders The orders hashtable to replace it with.
 	 */
-	public static void setAllOrders(Hashtable<String, ArrayList<Object>> newOrders)
+	public static void setAllOrders(HashMap<String, ArrayList<Object>> newOrders)
 	{
 		// Replace the main order hashtable.
 		orders = newOrders;
@@ -452,13 +449,13 @@ public class OrderRegistry {
 	 */
 	public static boolean containsOrder(Object obj)
 	{
-		// Enumerate through the different mod ids with at least one order.
-		for (Enumeration<String> e = getModIdsEnumerator(); e.hasMoreElements();)
+		// Iterate through the different mod ids with at least one order.
+		for (Iterator<String> iterator = getModIdsIterator(); iterator.hasNext(); )
 		{
 			// Create a new String to store the modid.
-			String modid = (String) e.nextElement();
-			
-			// If the current modid's list contains it, return true.
+			String modid = (String) iterator.next();
+
+            // If the current modid's list contains it, return true.
 			if (orders.get(modid).contains(obj)) return true;
 		}
 		
@@ -500,13 +497,13 @@ public class OrderRegistry {
 	public static String getModId(Object order)
 	{
 		// Iterate through all of the ids.
-		// Enumerate through all of the mods.
-		for (Enumeration<String> e = getModIdsEnumerator(); e.hasMoreElements();)
+		// Iterate through all of the mods.
+		for (Iterator<String> iterator = getModIdsIterator(); iterator.hasNext(); )
 		{
 			// Create a new String to store the modid.
-			String modid = (String) e.nextElement();
-			
-			// If the current modid's list contains the object in question, return the modid.
+			String modid = (String) iterator.next();
+
+            // If the current modid's list contains the object in question, return the modid.
 			if (orders.get(modid).contains(order)) return modid;
 		}
 		
@@ -523,13 +520,13 @@ public class OrderRegistry {
 		// Create an ending variable.
 		ArrayList<String> end = new ArrayList<String>();
 		
-		// Enumerate through all of the mods.
-		for (Enumeration<String> e = getModIdsEnumerator(); e.hasMoreElements();)
+		// Iterate through all of the mods.
+		for (Iterator<String> iterator = getModIdsIterator(); iterator.hasNext(); )
 		{
 			// Create a new String to store the modid.
-			String modid = (String) e.nextElement();
-					
-			// Add the current modid to the list.
+			String modid = (String) iterator.next();
+
+            // Add the current modid to the list.
 			end.add(modid);
 		}
 		
@@ -545,11 +542,11 @@ public class OrderRegistry {
 		// Create a OrderBase variable that will eventually be returned.
 		OrderBase end = null;
 		
-		// Enumerate through the different mod ids with at least one order.
-		for (Enumeration<String> e = getModIdsEnumerator(); e.hasMoreElements();)
+		// Iterate through the different mod ids with at least one order.
+		for (Iterator<String> iterator = getModIdsIterator(); iterator.hasNext(); )
 		{
 			// Iterate through the objects.
-			for (Object obj : orders.get(e.nextElement()))
+			for (Object obj : orders.get(iterator.next()))
 			{
 				// If the current order/s id
 				// is equal to the one wanted, return it.

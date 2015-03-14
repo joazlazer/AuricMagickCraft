@@ -27,7 +27,7 @@ public class ModItems {
     }
 
     public static void registerShapedRecipes() {
-        GameRegistry.addShapedRecipe(new ItemStack(ITEMS.awakeningCrystal, 1), Recipes.AWAKENING_CRYSTAL);
-        GameRegistry.addShapedRecipe(new ItemStack(ITEMS.awakeningCrystal, 1), RecipeHelper.flipCircular(Recipes.AWAKENING_CRYSTAL));
+        GameRegistry.addRecipe(Recipes.AWAKENING_CRYSTAL);
+        GameRegistry.addRecipe(Recipes.AWAKENING_CRYSTAL_FLIPPED);
     }
 }

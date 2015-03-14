@@ -1,23 +1,17 @@
 package joazlazer.mods.amc.client.render;
 
+import joazlazer.mods.amc.api.order.OrderBase;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.DynamicTexture;
-import net.minecraft.client.shader.TesselatorVertexState;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
-import java.awt.Color;
 
+import java.awt.*;
 import java.util.Random;
 
 public class RenderHelper {
-    // Static Variables.
-    public static ResourceLocation placeholder;
-    public static DynamicTexture viewTexture;
-    public static Tessellator tess;
-    public static Random random;
-
     // Constants
     private static final int zLevel = 0;
 
@@ -26,6 +20,12 @@ public class RenderHelper {
         random = new Random();
         viewTexture = new DynamicTexture(256, 256);
     }
+
+    // Static Variables.
+    public static ResourceLocation placeholder;
+    public static DynamicTexture viewTexture;
+    public static Tessellator tess;
+    public static Random random;
 
     public static boolean blurScreen(int times, int startX, int startY, int endX, int endY) {
         // Get the current instance of Minecraft.
@@ -46,9 +46,9 @@ public class RenderHelper {
         GL11.glViewport(0, 0, mc.displayWidth, mc.displayHeight);
 
         tess.startDrawingQuads();
-        float f1 = mc.displayWidth > mc.displayHeight ? 120.0F / (float)mc.displayWidth : 120.0F / (float)mc.displayHeight;
-        float f2 = (float)mc.displayHeight * f1 / 256.0F;
-        float f3 = (float)mc.displayWidth * f1 / 256.0F;
+        float f1 = mc.displayWidth > mc.displayHeight ? 120.0F / (float) mc.displayWidth : 120.0F / (float) mc.displayHeight;
+        float f2 = (float) mc.displayHeight * f1 / 256.0F;
+        float f3 = (float) mc.displayWidth * f1 / 256.0F;
         GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
         GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
         tess.setColorRGBA_F(1.0F, 1.0F, 1.0F, 1.0F);
@@ -69,7 +69,7 @@ public class RenderHelper {
         mc.renderEngine.bindTexture(placeholder);
 
         // Copies the screen.
-        GL11.glCopyTexSubImage2D(GL11.GL_TEXTURE_2D, 0, (int)(startX * 256.0F / mc.displayWidth), (int)(startY * 256.0F / mc.displayHeight), (int)((endX - startX) * 256.0F / mc.displayWidth), (int)((endY - startY) * 256.0F / mc.displayHeight), 256, 256);
+        GL11.glCopyTexSubImage2D(GL11.GL_TEXTURE_2D, 0, (int) (startX * 256.0F / mc.displayWidth), (int) (startY * 256.0F / mc.displayHeight), (int) ((endX - startX) * 256.0F / mc.displayWidth), (int) ((endY - startY) * 256.0F / mc.displayHeight), 256, 256);
 
         // Enable the blend function.
         GL11.glEnable(GL11.GL_BLEND);
@@ -86,12 +86,11 @@ public class RenderHelper {
         // Constant
         byte var3 = 3;
 
-        for (int i = 0; i < var3; ++i)
-        {
-            tess.setColorRGBA_F(1.0F, 1.0F, 1.0F, 1.0F / (float)(i + 1));
+        for (int i = 0; i < var3; ++i) {
+            tess.setColorRGBA_F(1.0F, 1.0F, 1.0F, 1.0F / (float) (i + 1));
             int j = mc.displayWidth;
             int k = mc.displayHeight;
-            float f1 = (float)(i - var3 / 2) / 256.0F;
+            float f1 = (float) (i - var3 / 2) / 256.0F;
             tess.addVertexWithUV((double) j, (double) k, (double) zLevel, (double) (0.0F + f1), 0.0D);
             tess.addVertexWithUV((double) j, 0.0D, (double) zLevel, (double) (1.0F + f1), 0.0D);
             tess.addVertexWithUV(0.0D, 0.0D, (double) zLevel, (double) (1.0F + f1), 1.0D);
@@ -106,7 +105,7 @@ public class RenderHelper {
         // Set the placeholder texture.
         placeholder = Minecraft.getMinecraft().renderEngine.getDynamicTextureLocation("blur_background_amc", viewTexture);
 
-        for(int i0 = 0; i0 < 7; i0++) {
+        for (int i0 = 0; i0 < 7; i0++) {
             Minecraft.getMinecraft().getTextureManager().bindTexture(placeholder);
             GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
             GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
@@ -118,16 +117,15 @@ public class RenderHelper {
             GL11.glDisable(GL11.GL_ALPHA_TEST);
             byte b0 = 3;
 
-            for (int i = 0; i < b0; ++i)
-            {
-                tess.setColorRGBA_F(1.0F, 1.0F, 1.0F, 1.0F / (float)(i + 1));
+            for (int i = 0; i < b0; ++i) {
+                tess.setColorRGBA_F(1.0F, 1.0F, 1.0F, 1.0F / (float) (i + 1));
                 int j = Minecraft.getMinecraft().displayWidth;
                 int k = Minecraft.getMinecraft().displayHeight;
-                float f1 = (float)(i - b0 / 2) / 256.0F;
-                tess.addVertexWithUV((double)j, (double)k, (double)zLevel, (double)(0.0F + f1), 1.0D);
-                tess.addVertexWithUV((double)j, 0.0D, (double)zLevel, (double)(1.0F + f1), 1.0D);
-                tess.addVertexWithUV(0.0D, 0.0D, (double)zLevel, (double)(1.0F + f1), 0.0D);
-                tess.addVertexWithUV(0.0D, (double)k, (double)zLevel, (double)(0.0F + f1), 0.0D);
+                float f1 = (float) (i - b0 / 2) / 256.0F;
+                tess.addVertexWithUV((double) j, (double) k, (double) zLevel, (double) (0.0F + f1), 1.0D);
+                tess.addVertexWithUV((double) j, 0.0D, (double) zLevel, (double) (1.0F + f1), 1.0D);
+                tess.addVertexWithUV(0.0D, 0.0D, (double) zLevel, (double) (1.0F + f1), 0.0D);
+                tess.addVertexWithUV(0.0D, (double) k, (double) zLevel, (double) (0.0F + f1), 0.0D);
             }
 
             tess.draw();
@@ -151,7 +149,7 @@ public class RenderHelper {
         // Color the circle.
         tess.instance.setColorRGBA(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
 
-        for(int ii = 0; ii < num_segments; ii++) {
+        for (int ii = 0; ii < num_segments; ii++) {
 
             // Add a point.
             tess.instance.addVertex(x + cx, y + cy, zLevel);
@@ -173,7 +171,7 @@ public class RenderHelper {
     }
 
     public static void drawCircle(float x, float y, float radius, int num_segments, float z_level, Color color, boolean hollow) {
-        if(hollow) {
+        if (hollow) {
             drawHollowCircle(x, y, radius, num_segments, z_level, color);
             return;
         }
@@ -201,7 +199,7 @@ public class RenderHelper {
         OpenGlHelper.glBlendFunc(770, 771, 1, 0);
         GL11.glShadeModel(GL11.GL_SMOOTH);
 
-        for(int ii = 0; ii < num_segments; ii++) {
+        for (int ii = 0; ii < num_segments; ii++) {
 
             // Add a point.
             tess.addVertex(x + cx, y + cy, zLevel);
@@ -225,6 +223,93 @@ public class RenderHelper {
         GL11.glEnable(GL11.GL_TEXTURE_2D);
     }
 
-    public static int randomColorInt() { return random.nextInt(255); }
-    public static Color randomOpaqueColor() { return new Color(randomColorInt(), randomColorInt(), randomColorInt(), 255); }
+    public static int randomColorInt() {
+        return random.nextInt(255);
+    }
+
+    public static Color randomOpaqueColor() {
+        return new Color(randomColorInt(), randomColorInt(), randomColorInt(), 255);
+    }
+
+    public static void drawOrderIcon(int x, int y, OrderBase order) {
+        drawOrderIcon(x, y, order, GL11.GL_ONE_MINUS_SRC_ALPHA, 0.0D);
+    }
+
+    public static void drawOrderIcon(int x, int y, OrderBase order, int blend, double z) {
+        drawOrderIcon((double) x, (double) y, order, blend, z);
+    }
+
+    public static void drawOrderIcon(double x, double y, OrderBase order, int blend, double z) {
+        if (order == null) {
+            return;
+        }
+        Minecraft mc = Minecraft.getMinecraft();
+        joazlazer.mods.amc.util.Color color = order.getColor();
+
+        GL11.glPushMatrix();
+        {
+            GL11.glDisable(GL11.GL_LIGHTING);
+            GL11.glAlphaFunc(GL11.GL_GREATER, 0.003921569F);
+            GL11.glEnable(GL11.GL_BLEND);
+            GL11.glBlendFunc(GL11.GL_SRC_ALPHA, blend);
+            GL11.glPushMatrix();
+            mc.renderEngine.bindTexture(order.getTexture());
+            GL11.glColor4f(color.getRed() / 255.0F, color.getGreen() / 255.0F, color.getBlue() / 255.0F, color.getAlpha() / 255.0F);
+            Tessellator var9 = Tessellator.instance;
+            var9.startDrawingQuads();
+            var9.setColorRGBA(color.getRed(), color.getGreen(),color.getBlue(), color.getAlpha());
+            var9.addVertexWithUV(x + 0.0D, y + 16.0D, z, 0.0D, 1.0D);
+            var9.addVertexWithUV(x + 16.0D, y + 16.0D, z, 1.0D, 1.0D);
+            var9.addVertexWithUV(x + 16.0D, y + 0.0D, z, 1.0D, 0.0D);
+            var9.addVertexWithUV(x + 0.0D, y + 0.0D, z, 0.0D, 0.0D);
+            var9.draw();
+            GL11.glPopMatrix();
+            GL11.glDisable(GL11.GL_BLEND);
+            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+            GL11.glAlphaFunc(GL11.GL_GREATER, 0.1F);
+            GL11.glEnable(GL11.GL_LIGHTING);
+        }
+        GL11.glPopMatrix();
+    }
+
+    public static void drawLargeOrderIcon(double x, double y, OrderBase order, int blend, double z) {
+        if (order == null) {
+            return;
+        }
+        Minecraft mc = Minecraft.getMinecraft();
+        joazlazer.mods.amc.util.Color color = order.getColor();
+
+        GL11.glPushMatrix();
+        {
+            GL11.glDisable(GL11.GL_LIGHTING);
+            GL11.glAlphaFunc(GL11.GL_GREATER, 0.003921569F);
+            GL11.glEnable(GL11.GL_BLEND);
+            GL11.glBlendFunc(GL11.GL_SRC_ALPHA, blend);
+            GL11.glPushMatrix();
+            mc.renderEngine.bindTexture(order.getLargeTexture());
+            GL11.glColor4f(color.getRed() / 255.0F, color.getGreen() / 255.0F, color.getBlue() / 255.0F, color.getAlpha() / 255.0F);
+            Tessellator var9 = Tessellator.instance;
+            var9.startDrawingQuads();
+            var9.setColorRGBA(color.getRed(), color.getGreen(),color.getBlue(), color.getAlpha());
+            var9.addVertexWithUV(x + 0.0D, y + 32.0D, z, 0.0D, 1.0D);
+            var9.addVertexWithUV(x + 32.0D, y + 32.0D, z, 1.0D, 1.0D);
+            var9.addVertexWithUV(x + 32.0D, y + 0.0D, z, 1.0D, 0.0D);
+            var9.addVertexWithUV(x + 0.0D, y + 0.0D, z, 0.0D, 0.0D);
+            var9.draw();
+            GL11.glPopMatrix();
+            GL11.glDisable(GL11.GL_BLEND);
+            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+            GL11.glAlphaFunc(GL11.GL_GREATER, 0.1F);
+            GL11.glEnable(GL11.GL_LIGHTING);
+        }
+        GL11.glPopMatrix();
+    }
+
+    public static void drawLargeOrderIcon(int x, int y, OrderBase order) {
+        drawLargeOrderIcon(x, y, order, GL11.GL_ONE_MINUS_SRC_ALPHA, 0.0D);
+    }
+
+    public static void drawLargeOrderIcon(int x, int y, OrderBase order, int blend, double z) {
+        drawLargeOrderIcon((double) x, (double) y, order, blend, z);
+    }
 }

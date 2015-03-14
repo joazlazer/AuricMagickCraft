@@ -1,9 +1,13 @@
 package joazlazer.mods.amc.handlers;
 
+import com.ibm.icu.impl.ICUService;
 import cpw.mods.fml.client.event.ConfigChangedEvent;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.relauncher.Side;
 import joazlazer.mods.amc.reference.Reference;
 import joazlazer.mods.amc.util.LogHelper;
+import org.lwjgl.input.Keyboard;
 
 import java.io.File;
 
@@ -34,6 +38,10 @@ public class ConfigurationHandler {
 
             // Read the properties of the configuration file.
             debugMode = config.get(net.minecraftforge.common.config.Configuration.CATEGORY_GENERAL, "debugMode", false, "Whether or not you want your console to be clogged up with debug information.").getBoolean(false);
+            if(FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
+                KeyHandler.spellCast.setKeyCode(config.get("keys", "spellCastKey", -99, "The key used for casting spells.").getInt(-99));
+                KeyHandler.cancelSpellCastMod.setKeyCode(config.get("keys", "spellCastCancelKey", Keyboard.KEY_LSHIFT, "The key used, in combination with the spell cast key, to cancel spell casting.").getInt(Keyboard.KEY_F));
+            }
         }
         catch(Exception ex) {
             // Log the exception.

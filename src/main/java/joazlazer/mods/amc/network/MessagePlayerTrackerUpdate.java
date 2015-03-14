@@ -15,18 +15,18 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
 
-public class PacketPlayerTrackerUpdate implements IMessage {
+public class MessagePlayerTrackerUpdate implements IMessage {
 
     public Object arg;
     public String username;
     public String id;
     public String type;
 
-    public PacketPlayerTrackerUpdate() {
+    public MessagePlayerTrackerUpdate() {
 
     }
 
-    public PacketPlayerTrackerUpdate(String username, String id, Object arg) {
+    public MessagePlayerTrackerUpdate(String username, String id, Object arg) {
         this.username = username;
         this.id = id;
         this.arg = arg;
@@ -64,11 +64,11 @@ public class PacketPlayerTrackerUpdate implements IMessage {
 
 }
 
-    public static class Handler implements IMessageHandler<PacketPlayerTrackerUpdate, IMessage> {
+    public static class Handler implements IMessageHandler<MessagePlayerTrackerUpdate, IMessage> {
 
         @Override
-        public IMessage onMessage(PacketPlayerTrackerUpdate message, MessageContext ctx) {
-            World world = FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT ? Minecraft.getMinecraft().theWorld : MinecraftServer.getServer().getEntityWorld();
+        public IMessage onMessage(MessagePlayerTrackerUpdate message, MessageContext ctx) {
+            World world = FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT ? ClientWrapper.getTheWorld() : MinecraftServer.getServer().getEntityWorld();
             EntityPlayer player = world.getPlayerEntityByName(message.username);
             if(!AuricMagickCraft.PlayerTracker.hasData(player)) {
                 PlayerData data = PlayerDataFactory.newData(player);

@@ -6,7 +6,7 @@ import cpw.mods.fml.common.gameevent.PlayerEvent;
 import cpw.mods.fml.relauncher.Side;
 import joazlazer.mods.amc.api.order.OrderBase;
 import joazlazer.mods.amc.handlers.NetworkHandler;
-import joazlazer.mods.amc.network.PacketPlayerTrackerUpdate;
+import joazlazer.mods.amc.network.MessagePlayerTrackerUpdate;
 import joazlazer.mods.amc.util.LogHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -94,11 +94,11 @@ public class PlayerTracker {
     public void updateToOther(String username, String id, Object obj) {
         if(FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
             System.out.println("UPDATING TO SERVER");
-            NetworkHandler.Network.sendToServer(new PacketPlayerTrackerUpdate(username, id, obj));
+            NetworkHandler.Network.sendToServer(new MessagePlayerTrackerUpdate(username, id, obj));
         }
         else {
             System.out.println("UPDATING TO " + username + "'s CLIENT!!!");
-            NetworkHandler.Network.sendTo(new PacketPlayerTrackerUpdate(username, id, obj), (EntityPlayerMP) MinecraftServer.getServer().getEntityWorld().getPlayerEntityByName(username));
+            NetworkHandler.Network.sendTo(new MessagePlayerTrackerUpdate(username, id, obj), (EntityPlayerMP) MinecraftServer.getServer().getEntityWorld().getPlayerEntityByName(username));
         }
     }
 }

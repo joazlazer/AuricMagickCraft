@@ -28,15 +28,11 @@ public class GuiTechTree extends GuiAMC {
     @Override
     public void drawScreen(int p_73863_1_, int p_73863_2_, float p_73863_3_) {
         this.drawDefaultBackground();
-
-        int cx;
-        int cy;
-
         //this.drawGradientRect(0, 0, Minecraft.getMinecraft().displayWidth, Minecraft.getMinecraft().displayHeight, windowColor, windowColor);
         //this.drawGradientRect(this.guiLeft, this.guiTop, this.xSize, this.ySize, supposedBoundsColor, supposedBoundsColor);
-        MathHelper.circle(16, 16, 8).primitiveDraw(GL11.GL_LINE_LOOP, true, windowColor, zLevel);
-        RenderHelper.drawHollowCircle(16, 32, 8, MathHelper.getEstimatedSegmentCount("circle", 8), zLevel, windowColor);
-        this.drawGradientRect(this.mc.displayWidth / 2 - 8, this.mc.displayHeight - 16, this.mc.displayWidth / 2 + 8, this.mc.displayHeight, supposedBoundsColor, supposedBoundsColor);
+        //MathHelper.circle(16, 16, 8).primitiveDraw(GL11.GL_LINE_LOOP, true, windowColor, zLevel);
+        //RenderHelper.drawHollowCircle(16, 32, 8, MathHelper.getEstimatedSegmentCount("circle", 8), zLevel, windowColor);
+        //this.drawGradientRect(this.mc.displayWidth / 2 - 8, this.mc.displayHeight - 16, this.mc.displayWidth / 2 + 8, this.mc.displayHeight, supposedBoundsColor, supposedBoundsColor);
     }
 
     @Override

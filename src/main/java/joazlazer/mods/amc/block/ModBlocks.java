@@ -53,6 +53,6 @@ public class ModBlocks {
     }
 
     public static void registerShapedRecipes() {
-        //GameRegistry.addRecipe(new ShapedOreRecipe(BLOCKS.awakeningTable, 1), Recipes.AWAKENING_TABLE);
+        GameRegistry.addRecipe(Recipes.AWAKENING_TABLE);
     }
 }

@@ -1,5 +1,7 @@
 package joazlazer.mods.amc.util;
 
+import net.minecraftforge.oredict.ShapedOreRecipe;
+
 public class RecipeHelper {
     public static Object[] flipCircular(Object[] input) {
         Object[] output = new Object[9];

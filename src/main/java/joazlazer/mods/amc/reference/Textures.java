@@ -15,6 +15,8 @@ public class Textures {
 
     public static class Orders {
         public static final ResourceLocation ARCANA = new ResourceLocation(Reference.MOD_ID, "textures/orders/arcana.png");
+        public static final ResourceLocation ARCANA_LARGE = new ResourceLocation(Reference.MOD_ID, "textures/orders/arcana_large.png");
         public static final ResourceLocation ALCHEMIA = new ResourceLocation(Reference.MOD_ID, "textures/orders/alchemia.png");
+        public static final ResourceLocation ALCHEMIA_LARGE = new ResourceLocation(Reference.MOD_ID, "textures/orders/alchemia_large.png");
     }
 }

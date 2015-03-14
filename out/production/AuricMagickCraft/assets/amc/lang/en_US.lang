@@ -1,7 +1,26 @@
+#Block Names
 tile.amc:awakeningTable.name=Awakening Table
 item.amc:awakeningCrystal.name=Awakening Crystal
+
+#Creative Tabs
 tab.amc=Auric Magick Craft
+
+#Key Categories
 key.categories.amc=Auric Magick Craft
+
+#Key Bindings
 key.amc.techTreeOpen=Open Tech Tree
+
+#Gui String Constants
 container.amc:orders=Orders
 container.amc:spells=Spells
+
+#Native Order Localizations
+order.alchemia.name=Order Alchemia
+order.arcana.name=Order Arcana
+
+#Config Names
+config.ctg.amc:keys.name=Keybindings
+
+#Config Tooltips
+config.ctg.amc:keys.name.tooltip=Keybindings used in the mod that can't be in Controls because of Minecraft's lack of the ability to have two key bindings to the same key.
