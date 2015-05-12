@@ -16,15 +16,27 @@ public enum GuiColor {
     PINK(12),
     MAGENTA(13),
     YELLOW(14),
-    WHITE(15);
+    WHITE(15),
+    OBFUSCATED('k'),
+    BOLD('l'),
+    STRIKETHROUGH('m'),
+    UNDERLINE('n'),
+    ITALIC('o'),
+    RESET('r');
 
-    private int number;
+    private int number = -1;
+    private char character;
+
     GuiColor(int number) {
         this.number = number;
+    }
+    GuiColor(char character) {
+        this.character = character;
     }
 
     @Override
     public String toString() {
-        return "\u00a7" + Integer.toHexString(number);
+        if (number != -1) return "\u00a7" + Integer.toHexString(number);
+        else return "\u00a7" + character;
     }
 }

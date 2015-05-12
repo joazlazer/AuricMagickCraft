@@ -12,7 +12,6 @@ import joazlazer.mods.amc.api.order.OrderRegistry;
 import joazlazer.mods.amc.api.spell.ModSpells;
 import joazlazer.mods.amc.api.spell.SpellRegistry;
 import joazlazer.mods.amc.block.ModBlocks;
-import joazlazer.mods.amc.casting.CastingManager;
 import joazlazer.mods.amc.entity.player.PlayerTracker;
 import joazlazer.mods.amc.handlers.ConfigurationHandler;
 import joazlazer.mods.amc.handlers.EventHandler;
@@ -75,6 +74,9 @@ public class AuricMagickCraft {
 
         // Register all spells native to amc.
         ModSpells.registerSpells();
+
+        // Initialize the event handlers.
+        EventHandler.initEventHandlers();
     }
 
     @Mod.EventHandler

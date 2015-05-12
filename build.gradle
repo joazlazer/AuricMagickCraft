@@ -22,7 +22,7 @@ group= "joazlazer.mods.amc" // http://maven.apache.org/guides/mini/guide-naming-
 archivesBaseName = "AuricMagickCraft"
 
 minecraft {
-    version = "1.7.10-10.13.2.1291"
+    version = "10.13.3.1403-1.7.10"
     assetDir = "eclipse/assets"
 }
 

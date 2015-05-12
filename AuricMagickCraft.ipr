@@ -172,32 +172,9 @@
   <component name="ProjectDictionaryState">
     <dictionary name="joazlazer">
       <words>
-        <w>addon</w>
-        <w>addons</w>
         <w>alchemia</w>
-        <w>arcanist</w>
-        <w>bookshelve</w>
-        <w>hashtable</w>
-        <w>joazlazer</w>
-        <w>lightblue</w>
-        <w>lightgray</w>
-        <w>lwjgl</w>
-        <w>magick</w>
         <w>minecraft</w>
-        <w>mod's</w>
-        <w>modid</w>
-        <w>modid's</w>
-        <w>modids</w>
-        <w>opengl</w>
-        <w>practicer</w>
-        <w>respawn</w>
-        <w>resync</w>
-        <w>successfulness</w>
-        <w>tangetial</w>
         <w>tessellator</w>
-        <w>turquise</w>
-        <w>unloc</w>
-        <w>unlocalized</w>
       </words>
     </dictionary>
   </component>
@@ -206,7 +183,7 @@
       <module fileurl="file://$PROJECT_DIR$/AuricMagickCraft.iml" filepath="$PROJECT_DIR$/AuricMagickCraft.iml" />
     </modules>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_6" assert-keyword="true" jdk-15="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_6" default="false" assert-keyword="true" jdk-15="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/out" />
   </component>
   <component name="SvnBranchConfigurationManager">

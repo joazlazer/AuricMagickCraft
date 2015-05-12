@@ -11,5 +11,6 @@ public class Messages {
         public static final int PLAYER_TRACKER_UPDATE_DISC = 0;
         public static final int CASTING_CONTROL_DISC = 1;
         public static final int CAST_DATA_REQUEST_DISC = 4;
+        public static final int PLAYER_RESPAWN_DISC = 6;
     }
 }

@@ -33,13 +33,13 @@ public class CastingManager {
     public void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
         for(Object obj : MinecraftServer.getServer().getEntityWorld().playerEntities) {
             EntityPlayerMP player = (EntityPlayerMP) obj;
-            if (player.getDisplayName() != event.player.getDisplayName()) {
-                NetworkHandler.Network.sendTo(new MessageServerEvent(MessageServerEvent.EventType.DISCONNECT), player);
-            }
-        }
+    if (player.getDisplayName() != event.player.getDisplayName()) {
+        NetworkHandler.Network.sendTo(new MessageServerEvent(MessageServerEvent.EventType.DISCONNECT), player);
     }
+}
+}
 
-    @SubscribeEvent
+@SubscribeEvent
     public void onServerTick(TickEvent.ServerTickEvent e) {
         updateContainerStatusOfAllPlayers();
         updateAllCastingSpells();

@@ -23,12 +23,12 @@ public class PlayerTracker {
         FMLCommonHandler.instance().bus().register(this);
         PlayerDataRegistry.registerBoolean(PlayerTrackerConstants.AWAKE_BOOLEAN, PlayerTrackerConstants.AWAKE_BOOLEAN_DEFAULT);
         PlayerDataRegistry.registerString(PlayerTrackerConstants.ORDER_STRING, PlayerTrackerConstants.ORDER_STRING_DEFAULT);
+        PlayerDataRegistry.registerInteger(PlayerTrackerConstants.SELECTED_SPELL, PlayerTrackerConstants.SELECTED_SPELL_DEFAULT);
     }
 
     @SubscribeEvent
     public void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
-
-        System.out.println("LOGGED IN! :D :D");
+        playerStats.put(event.player.getDisplayName(), PlayerDataFactory.newData(event.player));
     }
 
     @SubscribeEvent
@@ -38,12 +38,14 @@ public class PlayerTracker {
 
     @SubscribeEvent
     public void onPlayerChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
-        System.out.println("DIMENSION CHANGE! :D :D");
+        if (hasData(event.player.getDisplayName()))
+            getData(event.player.getDisplayName()).player = new WeakReference<EntityPlayer>(event.player);
     }
 
     @SubscribeEvent
     public void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
-        if(hasData(event.player.getDisplayName())) getData(event.player.getDisplayName()).player = new WeakReference<EntityPlayer>(event.player);
+        if (hasData(event.player.getDisplayName()))
+            getData(event.player.getDisplayName()).player = new WeakReference<EntityPlayer>(event.player);
     }
 
     public boolean hasData(EntityPlayer player) {
@@ -57,8 +59,7 @@ public class PlayerTracker {
     public boolean isAwake(String username) {
         try {
             return hasData(username) && getData(username).getBoolean(PlayerTrackerConstants.AWAKE_BOOLEAN);
-        }
-        catch(Exception ex) {
+        } catch (Exception ex) {
             LogHelper.fatal("Something terribly has gone wrong with PlayerTracker!!!:");
             LogHelper.fatal(ex.getStackTrace());
             throw new RuntimeException((ex));
@@ -66,37 +67,38 @@ public class PlayerTracker {
     }
 
     public PlayerData getData(String username) {
-        if(hasData(username)) return playerStats.get(username);
+        if (hasData(username)) return playerStats.get(username);
         else {
             LogHelper.error("Player stats get accessor failed: no PlayerData objects exists that is mapped to username '" + username + "'.");
             return null;
         }
     }
 
-    public PlayerData getData(EntityPlayer player) { return getData(player.getDisplayName()); }
+    public PlayerData getData(EntityPlayer player) {
+        return getData(player.getDisplayName());
+    }
 
     public void awaken(EntityPlayer player, OrderBase newOrder) {
         try {
             System.out.println("TOLD TO AWAKEN!");
-            if(!playerStats.contains(player.getDisplayName())) playerStats.put(player.getDisplayName(), PlayerDataFactory.newData(player));
+            if (!playerStats.contains(player.getDisplayName()))
+                playerStats.put(player.getDisplayName(), PlayerDataFactory.newData(player));
             getData(player).setBoolean(PlayerTrackerConstants.AWAKE_BOOLEAN, true);
             updateToOther(player.getDisplayName(), PlayerTrackerConstants.AWAKE_BOOLEAN, true);
             getData(player).setString(PlayerTrackerConstants.ORDER_STRING, newOrder.getUnlocName());
             updateToOther(player.getDisplayName(), PlayerTrackerConstants.ORDER_STRING, newOrder.getUnlocName());
-        }
-        catch(Exception ex) {
+        } catch (Exception ex) {
             LogHelper.fatal("Something terribly has gone wrong with PlayerTracker!!!:");
             LogHelper.fatal(ex.getStackTrace());
-            throw new RuntimeException((ex));
+            throw new RuntimeException(ex);
         }
     }
 
     public void updateToOther(String username, String id, Object obj) {
-        if(FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
+        if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
             System.out.println("UPDATING TO SERVER");
             NetworkHandler.Network.sendToServer(new MessagePlayerTrackerUpdate(username, id, obj));
-        }
-        else {
+        } else {
             System.out.println("UPDATING TO " + username + "'s CLIENT!!!");
             NetworkHandler.Network.sendTo(new MessagePlayerTrackerUpdate(username, id, obj), (EntityPlayerMP) MinecraftServer.getServer().getEntityWorld().getPlayerEntityByName(username));
         }

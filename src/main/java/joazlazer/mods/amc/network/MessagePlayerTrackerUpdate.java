@@ -44,6 +44,9 @@ public class MessagePlayerTrackerUpdate implements IMessage {
         else if(type.equalsIgnoreCase("boolean")) {
             arg = buf.readBoolean();
         }
+        else if(type.equalsIgnoreCase("integer")) {
+            arg = buf.readInt();
+        }
         System.out.println("RECEIVED PACKET WITH: { username=" + username + ", id=" + id +  ", arg=" + arg + ", type=" + type + " }");
     }
 
@@ -60,6 +63,11 @@ public class MessagePlayerTrackerUpdate implements IMessage {
             ByteBufUtils.writeUTF8String(buf, "boolean");
             buf.writeBoolean((Boolean) arg);
             System.out.println("SENT PACKET WITH: { username=" + username + ", id=" + id +  ", arg=" + arg + ", type=boolean }");
+        }
+        else if (arg instanceof Integer) {
+            ByteBufUtils.writeUTF8String(buf, "integer");
+            buf.writeInt((Integer) arg);
+            System.out.println("SENT PACKET WITH: { username=" + username + ", id=" + id +  ", arg=" + arg + ", type=integer }");
         }
 
 }
@@ -80,6 +88,9 @@ public class MessagePlayerTrackerUpdate implements IMessage {
                     AuricMagickCraft.PlayerTracker.getData(message.username).setString(message.id, (String) message.arg);
                 }
                 else if(message.type.equalsIgnoreCase("boolean")) {
+                    AuricMagickCraft.PlayerTracker.getData(message.username).setBoolean(message.id, (Boolean) message.arg);
+                }
+                else if(message.type.equalsIgnoreCase("integer")) {
                     AuricMagickCraft.PlayerTracker.getData(message.username).setBoolean(message.id, (Boolean) message.arg);
                 }
             }

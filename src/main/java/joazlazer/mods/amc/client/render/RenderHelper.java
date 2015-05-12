@@ -1,6 +1,7 @@
 package joazlazer.mods.amc.client.render;
 
 import joazlazer.mods.amc.api.order.OrderBase;
+import joazlazer.mods.amc.api.spell.SpellBase;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
@@ -311,5 +312,88 @@ public class RenderHelper {
 
     public static void drawLargeOrderIcon(int x, int y, OrderBase order, int blend, double z) {
         drawLargeOrderIcon((double) x, (double) y, order, blend, z);
+    }
+
+
+    public static void drawSpellIcon(int x, int y, SpellBase spell) {
+        drawSpellIcon(x, y, spell, GL11.GL_ONE_MINUS_SRC_ALPHA, 0.0D);
+    }
+
+    public static void drawSpellIcon(int x, int y, SpellBase spell, int blend, double z) {
+        drawSpellIcon((double) x, (double) y, spell, blend, z);
+    }
+
+    public static void drawSpellIcon(double x, double y, SpellBase spell, int blend, double z) {
+        if (spell == null) {
+            return;
+        }
+        Minecraft mc = Minecraft.getMinecraft();
+        joazlazer.mods.amc.util.Color color = spell.getColor();
+
+        GL11.glPushMatrix();
+        {
+            GL11.glDisable(GL11.GL_LIGHTING);
+            GL11.glAlphaFunc(GL11.GL_GREATER, 0.003921569F);
+            GL11.glEnable(GL11.GL_BLEND);
+            GL11.glBlendFunc(GL11.GL_SRC_ALPHA, blend);
+            GL11.glPushMatrix();
+            mc.renderEngine.bindTexture(spell.getTextureLocation());
+            GL11.glColor4f(color.getRed() / 255.0F, color.getGreen() / 255.0F, color.getBlue() / 255.0F, color.getAlpha() / 255.0F);
+            Tessellator var9 = Tessellator.instance;
+            var9.startDrawingQuads();
+            var9.setColorRGBA(color.getRed(), color.getGreen(),color.getBlue(), color.getAlpha());
+            var9.addVertexWithUV(x + 0.0D, y + 16.0D, z, 0.0D, 1.0D);
+            var9.addVertexWithUV(x + 16.0D, y + 16.0D, z, 1.0D, 1.0D);
+            var9.addVertexWithUV(x + 16.0D, y + 0.0D, z, 1.0D, 0.0D);
+            var9.addVertexWithUV(x + 0.0D, y + 0.0D, z, 0.0D, 0.0D);
+            var9.draw();
+            GL11.glPopMatrix();
+            GL11.glDisable(GL11.GL_BLEND);
+            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+            GL11.glAlphaFunc(GL11.GL_GREATER, 0.1F);
+            GL11.glEnable(GL11.GL_LIGHTING);
+        }
+        GL11.glPopMatrix();
+    }
+
+    public static void drawLargeSpellIcon(double x, double y, SpellBase spell, int blend, double z, int opacity) {
+        if (spell == null) {
+            return;
+        }
+        Minecraft mc = Minecraft.getMinecraft();
+        joazlazer.mods.amc.util.Color color = spell.getColor();
+
+        GL11.glPushMatrix();
+        {
+            GL11.glDisable(GL11.GL_LIGHTING);
+            GL11.glAlphaFunc(GL11.GL_GREATER, 0.003921569F);
+            GL11.glEnable(GL11.GL_BLEND);
+            GL11.glBlendFunc(GL11.GL_SRC_ALPHA, blend);
+            GL11.glPushMatrix();
+            mc.renderEngine.bindTexture(spell.getLargeTexture());
+            GL11.glColor4f(color.getRed() / 255.0F, color.getGreen() / 255.0F, color.getBlue() / 255.0F, opacity / 255.0F);
+            Tessellator var9 = Tessellator.instance;
+            var9.startDrawingQuads();
+            var9.setColorRGBA(color.getRed(), color.getGreen(),color.getBlue(), opacity);
+            var9.addVertexWithUV(x + 0.0D, y + 24.0D, z, 0.0D, 1.0D);
+            var9.addVertexWithUV(x + 24.0D, y + 24.0D, z, 1.0D, 1.0D);
+            var9.addVertexWithUV(x + 24.0D, y + 0.0D, z, 1.0D, 0.0D);
+            var9.addVertexWithUV(x + 0.0D, y + 0.0D, z, 0.0D, 0.0D);
+            var9.draw();
+            GL11.glPopMatrix();
+            GL11.glDisable(GL11.GL_BLEND);
+            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+            GL11.glAlphaFunc(GL11.GL_GREATER, 0.1F);
+            GL11.glEnable(GL11.GL_LIGHTING);
+        }
+        GL11.glPopMatrix();
+    }
+
+    public static void drawLargeSpellIcon(int x, int y, SpellBase spell, int opacity) {
+        drawLargeSpellIcon(x, y, spell, GL11.GL_ONE_MINUS_SRC_ALPHA, 0.0D, opacity);
+    }
+
+    public static void drawLargeSpellIcon(int x, int y, SpellBase spell, int blend, double z, int opacity) {
+        drawLargeSpellIcon((double) x, (double) y, spell, blend, z, opacity);
     }
 }

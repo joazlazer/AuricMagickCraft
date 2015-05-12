@@ -1,6 +1,7 @@
 package joazlazer.mods.amc.api.spell;
 
 import joazlazer.mods.amc.casting.CastingStatus;
+import joazlazer.mods.amc.util.Color;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
@@ -14,6 +15,13 @@ public class SpellBase {
     private boolean isSpecialty;
     private int x, y;
     private ResourceLocation textureLocation;
+    private Color color;
+
+    public void setLargeTexture(ResourceLocation largeTexture) {
+        this.largeTexture = largeTexture;
+    }
+
+    private ResourceLocation largeTexture;
 
     /**
      * @return the x
@@ -117,5 +125,17 @@ public class SpellBase {
 
     public void onServerCastTick(EntityPlayer player, World world, CastingStatus status) {
 
+    }
+
+    public void setColor(Color color) {
+        this.color = color;
+    }
+
+    public Color getColor() {
+        return color;
+    }
+
+    public ResourceLocation getLargeTexture() {
+        return largeTexture;
     }
 }

@@ -1,10 +1,15 @@
 package joazlazer.mods.amc.api.spell;
 
 import joazlazer.mods.amc.casting.CastingStatus;
+import joazlazer.mods.amc.reference.Textures;
+import joazlazer.mods.amc.util.Color;
+import joazlazer.mods.amc.util.GuiColor;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import org.lwjgl.Sys;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class SpellBlink extends SpellBase {
@@ -24,6 +29,24 @@ public class SpellBlink extends SpellBase {
     public SpellBlink() {
         super();
         setUnlocName("spellBlink");
+        setTextureLocation(Textures.Spells.BLINK);
+        setLargeTexture(Textures.Spells.BLINK_LARGE);
+        setColor(new Color(73, 150, 36));
+        ArrayList<String> tt = new ArrayList<String>();
+        populateTooltip(tt);
+        this.setTooltip(tt);
+    }
+
+    public void populateTooltip(ArrayList<String> tt) {
+        tt.add(GuiColor.MAGENTA + " - Blink:");
+        tt.add(GuiColor.LIGHTGRAY + "  A spell used for short-distance teleportation.");
+        tt.add(GuiColor.LIGHTGRAY + "  One of the most basic spells, it is known by most ");
+        tt.add(GuiColor.LIGHTGRAY + "  mages. It is cast by concentrating on where");
+        tt.add(GuiColor.LIGHTGRAY + "  one wants to be and it will be so.");
+        tt.add("");
+        tt.add(GuiColor.TURQUISE + " - Cooldown: " + GuiColor.LIGHTGRAY + "Low");
+        tt.add(GuiColor.PINK + " - Mana Cost: " + GuiColor.LIGHTGRAY + "Very Low");
+        tt.add(GuiColor.YELLOW + " - Specialty? " + GuiColor.LIGHTGRAY + this.isSpecialty());
     }
 
     @Override
@@ -65,4 +88,6 @@ public class SpellBlink extends SpellBase {
             // Teleport the player here.
         }
     }
+
+
 }

@@ -6,4 +6,8 @@ public class PlayerTrackerConstants {
 
     public static final String ORDER_STRING = "order";
     public static final String ORDER_STRING_DEFAULT = "";
+
+    public static final String SELECTED_SPELL = "selectedSpell";
+    public static final int SELECTED_SPELL_DEFAULT = 0;
+
 }

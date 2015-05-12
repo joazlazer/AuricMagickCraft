@@ -10,6 +10,7 @@ public class PlayerDataFactory {
         newData.player = new WeakReference<EntityPlayer>(player);
         for(String id : PlayerDataRegistry.Booleans.keySet()) newData.Booleans.put(id, PlayerDataRegistry.Booleans.get(id));
         for(String id : PlayerDataRegistry.Strings.keySet()) newData.Strings.put(id, PlayerDataRegistry.Strings.get(id));
+        for(String id : PlayerDataRegistry.Integers.keySet()) newData.Integers.put(id, PlayerDataRegistry.Integers.get(id));
         return newData;
     }
 }

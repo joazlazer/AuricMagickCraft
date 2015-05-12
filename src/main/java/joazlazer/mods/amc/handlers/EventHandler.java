@@ -4,9 +4,11 @@ import cpw.mods.fml.common.eventhandler.EventBus;
 import net.minecraftforge.common.MinecraftForge;
 
 public class EventHandler {
+    public static class Handlers {
+
+    }
 
     public static void initHandlers() {
-
     }
 
     public static void registerHandlers() {
@@ -20,7 +22,6 @@ public class EventHandler {
 
     public static void registerForgeEvents() {
         EventBus e = MinecraftForge.EVENT_BUS;
-
     }
 
     public static void initEventHandlers() {
