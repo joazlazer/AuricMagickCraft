@@ -17,5 +17,6 @@ public class NetworkHandler {
         Network.registerMessage(MessageCastingDataRequest.Handler.class, MessageCastingDataRequest.class, Messages.Server.CAST_DATA_REQUEST_DISC, Side.SERVER);
         Network.registerMessage(MessageServerEvent.Handler.class, MessageServerEvent.class, Messages.Client.SERVER_EVENT_DISC, Side.CLIENT);
         Network.registerMessage(MessagePlayerRespawn.Handler.class, MessagePlayerRespawn.class, Messages.Server.PLAYER_RESPAWN_DISC, Side.SERVER);
+        Network.registerMessage(MessageCastingUpdate.Handler.class, MessageCastingUpdate.class, Messages.Client.CAST_UPDATE, Side.CLIENT);
     }
 }

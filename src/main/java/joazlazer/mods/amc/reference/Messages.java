@@ -5,6 +5,7 @@ public class Messages {
         public static final int PLAYER_TRACKER_UPDATE_DISC = 2;
         public static final int CAST_DATA_REPLY_DISC = 3;
         public static final int SERVER_EVENT_DISC = 5;
+        public static final int CAST_UPDATE = 7;
     }
 
     public static class Server {

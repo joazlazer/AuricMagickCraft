@@ -10,4 +10,7 @@ public class PlayerTrackerConstants {
     public static final String SELECTED_SPELL = "selectedSpell";
     public static final int SELECTED_SPELL_DEFAULT = 0;
 
+    public static final String SELECTED_SPELL_NAME = "selectedSpellName";
+    public static final String SELECTED_SPELL_NAME_DEFAULT = "";
+
 }

@@ -9,7 +9,6 @@ public class CastingStatus {
     public SpellBase selectedSpell;
     public CastingStatus() {
         changeSpell(ModSpells.SPELLS.blink);
-
     }
     public NBTTagCompound customNBT = new NBTTagCompound();
     public void changeSpell(SpellBase spellBase) {

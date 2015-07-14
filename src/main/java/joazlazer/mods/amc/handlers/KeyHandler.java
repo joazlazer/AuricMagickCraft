@@ -1,6 +1,7 @@
 package joazlazer.mods.amc.handlers;
 
 import cpw.mods.fml.client.registry.ClientRegistry;
+import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.InputEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
@@ -16,6 +17,7 @@ import net.minecraft.client.settings.GameSettings;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.World;
+import net.minecraftforge.client.event.MouseEvent;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -58,6 +60,7 @@ public class KeyHandler {
     public static DummyKeyBinding adj3 = new DummyKeyBinding(Keyboard.KEY_UP);
     public static DummyKeyBinding adj4 = new DummyKeyBinding(Keyboard.KEY_DOWN);
     public static Minecraft mc;
+    public static boolean moving;
 
     public static void registerKeyHandlers() {
         // Register the key bindings in ClientRegistry.
@@ -123,45 +126,10 @@ public class KeyHandler {
         }
 
         if (!isKeyDown(cancelSpellCastMod)) holdingSpellCastCancel = false;
-
-        // Catch Scroll wheel input.
-        {
-            int state = Mouse.getEventDWheel();
-
-            if (Math.abs(state) < 120) {
-                state = 0;
-            }
-
-            state /= 120;
-
-            if (state > 0) {
-                RenderHandler.spellSelection.previousSpell();
-            }
-
-            if (state < 0) {
-                RenderHandler.spellSelection.nextSpell();
-            }
-        }
-
-        if(isKeyDown(adj1)) {
-            RenderHandler.spellSelection.adj1 += 0.5f;
-            System.out.println("X Change: " + RenderHandler.spellSelection.adj1);
-        }
-
-        if(isKeyDown(adj2)) {
-            RenderHandler.spellSelection.adj1 -= 0.5f;
-            System.out.println("Y Change: " + RenderHandler.spellSelection.adj2);
-        }
-
-        if(isKeyDown(adj3)) {
-            RenderHandler.spellSelection.adj2 += 0.5f;
-            System.out.println("X Change: " + RenderHandler.spellSelection.adj1);
-        }
-
-        if(isKeyDown(adj4)) {
-            RenderHandler.spellSelection.adj2 -= 0.5f;
-            System.out.println("Y Change: " + RenderHandler.spellSelection.adj2);
-        }
+        GameSettings gs = Minecraft.getMinecraft().gameSettings;
+        if(!gs.keyBindForward.getIsKeyPressed() && !gs.keyBindBack.getIsKeyPressed() && !gs.keyBindLeft.getIsKeyPressed() && !gs.keyBindRight.getIsKeyPressed() && !gs.keyBindJump.getIsKeyPressed() && !gs.keyBindSneak.getIsKeyPressed()) moving = false;
+        else moving = true;
+        System.out.println(moving);
     }
 
     public static void notifyServerCastCancel() {
@@ -229,5 +197,19 @@ public class KeyHandler {
 
     public static void enqueueMessage(MessageCastingControl.ControlType controlType) {
         queue.add(new QueueItem(controlType));
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public void interceptMouseInput(MouseEvent event) {
+        if (event.dwheel == 0) return;
+        if (Minecraft.getMinecraft().theWorld != null) {
+            System.out.println(event.dwheel);
+            if(Minecraft.getMinecraft().thePlayer.isSneaking() && Minecraft.getMinecraft().thePlayer.getHeldItem() == null) {
+                event.setCanceled(true);
+                if(event.dwheel < 0) {
+                    GuiSpellSelectionOverlay.previousSpell();
+                } else GuiSpellSelectionOverlay.nextSpell();
+            }
+        }
     }
 }

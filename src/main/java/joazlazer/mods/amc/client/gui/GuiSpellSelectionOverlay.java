@@ -2,8 +2,7 @@ package joazlazer.mods.amc.client.gui;
 
 import cpw.mods.fml.common.gameevent.TickEvent;
 import joazlazer.mods.amc.AuricMagickCraft;
-import joazlazer.mods.amc.api.spell.SpellBase;
-import joazlazer.mods.amc.api.spell.SpellBlink;
+import joazlazer.mods.amc.api.spell.*;
 import joazlazer.mods.amc.client.render.RenderHelper;
 import joazlazer.mods.amc.entity.player.PlayerData;
 import joazlazer.mods.amc.reference.Textures;
@@ -14,16 +13,10 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import org.lwjgl.opengl.GL11;
 
 public class GuiSpellSelectionOverlay {
-    public boolean fadingIn;
-    public int opacity = 0;
-    public int selectedSpell = 0;
-    public int fadingOutTimer = 0;
-    public float angle = 30;
-
-    public float adj1;
-    public float adj2;
-
-    public int counter;
+    public static boolean fadingIn;
+    public static int opacity = 0;
+    public static int fadingOutTimer = 0;
+    public static int selectedSpell;
 
     public void render(RenderGameOverlayEvent event) {
         // Grab an instance of Minecraft.
@@ -59,7 +52,7 @@ public class GuiSpellSelectionOverlay {
 
                 // Start drawing a quad, and make sure the color is white.
                 tessellator.startDrawingQuads();
-                tessellator.setColorRGBA(255, 255, 255, 255);
+                tessellator.setColorRGBA(255, 255, 255, opacity);
 
                 // Add the four vertices.
                 tessellator.addVertexWithUV(posX + 0.0D, posY + size, 0.0D, 0.0D, 1.0D);
@@ -90,18 +83,18 @@ public class GuiSpellSelectionOverlay {
 
                 // Rotate the matrix.
                 GL11.glTranslatef(posX, posY, 0.0f);
-                GL11.glRotatef(angle, 0.0f, 0.0f, 1.0f);
+                GL11.glRotatef(selectedSpell * 30, 0.0f, 0.0f, 1.0f);
                 GL11.glTranslatef(0.0f, -78.0f, 0.0f);
 
                 // Start drawing a quad, and make sure the color is white.
                 tessellator.startDrawingQuads();
-                tessellator.setColorRGBA(255, 255, 255, 255);
+                tessellator.setColorRGBA(255, 255, 255, opacity);
 
                 // Add the four vertices.
-                tessellator.addVertexWithUV( + 0.0D,  + size, 0.0D, 0.0D, 1.0D);
-                tessellator.addVertexWithUV( + size,  + size, 0.0D, 1.0D, 1.0D);
-                tessellator.addVertexWithUV( + size,  + 0.0D, 0.0D, 1.0D, 0.0D);
-                tessellator.addVertexWithUV( + 0.0D,  + 0.0D, 0.0D, 0.0D, 0.0D);
+                tessellator.addVertexWithUV(+0.0D, +size, 0.0D, 0.0D, 1.0D);
+                tessellator.addVertexWithUV(+size, +size, 0.0D, 1.0D, 1.0D);
+                tessellator.addVertexWithUV(+size, +0.0D, 0.0D, 1.0D, 0.0D);
+                tessellator.addVertexWithUV(+0.0D, +0.0D, 0.0D, 0.0D, 0.0D);
 
                 // Finally, draw.
                 tessellator.draw();
@@ -121,6 +114,17 @@ public class GuiSpellSelectionOverlay {
         GL11.glPopMatrix();
 
         renderSpellIconInPosition(0, false, new SpellBlink(), event, opacity);
+        renderSpellIconInPosition(1, false, new SpellArcaneBolt(), event, opacity);
+        renderSpellIconInPosition(2, false, new SpellFireball(), event, opacity);
+        renderSpellIconInPosition(3, false, new SpellIceBolt(), event, opacity);
+        renderSpellIconInPosition(4, false, new SpellEnergyBeam(), event, opacity);
+        renderSpellIconInPosition(5, false, new SpellFireWave(), event, opacity);
+        renderSpellIconInPosition(6, false, new SpellFireBlast(), event, opacity);
+        renderSpellIconInPosition(7, false, new SpellWaterWhip(), event, opacity);
+        renderSpellIconInPosition(8, false, new SpellWaterWave(), event, opacity);
+        renderSpellIconInPosition(9, false, new SpellEnergyBall(), event, opacity);
+        renderSpellIconInPosition(10, false, new SpellTransmute(), event, opacity);
+        renderSpellIconInPosition(11, false, new SpellIceSpear(), event, opacity);
     }
 
     public void update(TickEvent.ClientTickEvent event) {
@@ -135,25 +139,13 @@ public class GuiSpellSelectionOverlay {
             fadingOutTimer -= 10;
         }
 
-        if(fadingOutTimer <= 0) {
+        if (fadingOutTimer <= 0) {
             fadingOutTimer = 0;
             fadeOut();
         }
-
-        counter++;
-
-        if(counter >= 10) {
-            counter = 0;
-            angle += 5f;
-            if(angle >= 360) angle = 0;
-
-            System.out.println("Angle: " + angle);
-        }
-
-        //System.out.println("fadingOutTimer: " + fadingOutTimer + "; opacity: " + opacity + "; fadingIn: " + fadingIn);
     }
 
-    public void nextSpell() {
+    public static void nextSpell() {
         fadingOutTimer = 560;
         fadeIn();
         selectedSpell -= 1;
@@ -166,7 +158,7 @@ public class GuiSpellSelectionOverlay {
         }
     }
 
-    public void previousSpell() {
+    public static void previousSpell() {
         fadingOutTimer = 560;
         fadeIn();
         selectedSpell += 1;
@@ -179,11 +171,11 @@ public class GuiSpellSelectionOverlay {
         }
     }
 
-    public void fadeIn() {
+    public static void fadeIn() {
         fadingIn = true;
     }
 
-    public void fadeOut() {
+    public static void fadeOut() {
         fadingIn = false;
     }
 
@@ -192,11 +184,56 @@ public class GuiSpellSelectionOverlay {
         int posX = event.resolution.getScaledWidth() / 2 - 128;
         int posY = event.resolution.getScaledHeight() / 2 - 128;
 
-        switch(pos) {
+        switch (pos) {
             case 0: {
                 RenderHelper.drawLargeSpellIcon(posX + 116, posY + 18, spell, opacity);
+                break;
+            }
+            case 1: {
+                RenderHelper.drawLargeSpellIcon(posX + 165, posY + 31, spell, opacity);
+                break;
+            }
+            case 2: {
+                RenderHelper.drawLargeSpellIcon(posX + 201, posY + 67, spell, opacity);
+                break;
+            }
+            case 3: {
+                RenderHelper.drawLargeSpellIcon(posX + 214, posY + 116, spell, opacity);
+                break;
+            }
+            case 4: {
+                RenderHelper.drawLargeSpellIcon(posX + 201, posY + 165, spell, opacity);
+                break;
+            }
+            case 5: {
+                RenderHelper.drawLargeSpellIcon(posX + 165, posY + 201, spell, opacity);
+                break;
+            }
+            case 6: {
+                RenderHelper.drawLargeSpellIcon(posX + 116, posY + 214, spell, opacity);
+                break;
+            }
+            case 7: {
+                RenderHelper.drawLargeSpellIcon(posX + 67, posY + 201, spell, opacity);
+                break;
+            }
+            case 8: {
+                RenderHelper.drawLargeSpellIcon(posX + 31, posY + 165, spell, opacity);
+                break;
+            }
+            case 9: {
+                RenderHelper.drawLargeSpellIcon(posX + 18, posY + 116, spell, opacity);
+                break;
+            }
+            case 10: {
+                RenderHelper.drawLargeSpellIcon(posX + 31, posY + 67, spell, opacity);
+                break;
+            }
+            case 11: {
+                RenderHelper.drawLargeSpellIcon(posX + 67, posY + 31, spell, opacity);
                 break;
             }
         }
     }
 }
+

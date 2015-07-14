@@ -20,7 +20,9 @@ public class ClientProxy extends CommonProxy {
     @Override
     public void registerKeyHandlers() {
         KeyHandler.registerKeyHandlers();
-        FMLCommonHandler.instance().bus().register(new KeyHandler());
+        KeyHandler kh = new KeyHandler();
+        FMLCommonHandler.instance().bus().register(kh);
+        MinecraftForge.EVENT_BUS.register(kh);
     }
 
     @Override

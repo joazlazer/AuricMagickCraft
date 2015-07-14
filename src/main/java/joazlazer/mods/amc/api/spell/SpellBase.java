@@ -1,6 +1,8 @@
 package joazlazer.mods.amc.api.spell;
 
+import cpw.mods.fml.relauncher.SideOnly;
 import joazlazer.mods.amc.casting.CastingStatus;
+import joazlazer.mods.amc.casting.client.ClientCastingStatus;
 import joazlazer.mods.amc.util.Color;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
@@ -124,6 +126,18 @@ public class SpellBase {
     }
 
     public void onServerCastTick(EntityPlayer player, World world, CastingStatus status) {
+
+    }
+
+    public void renderOtherPlayer(World world, float partialTicks, ClientCastingStatus status) {
+
+    }
+
+    public void renderFirstPerson(World world, float partialTicks, ClientCastingStatus status) {
+
+    }
+
+    public void renderThirdPerson(World world, float partialTicks, ClientCastingStatus status) {
 
     }
 

@@ -38,18 +38,22 @@ public class MessageServerEvent implements IMessage {
 
     @Override
     public void fromBytes(ByteBuf buf) {
+        System.out.println("frombytes messageserver event");
         type = EventType.fromInt(buf.readInt());
     }
 
     @Override
     public void toBytes(ByteBuf buf) {
         buf.writeInt(type.toInt());
+        System.out.println("tobytes messageserver event");
     }
 
     public static class Handler implements IMessageHandler<MessageServerEvent, IMessage> {
 
         @Override
         public IMessage onMessage(MessageServerEvent message, MessageContext ctx) {
+
+            System.out.println("onmeessage messageserver event");
             if(message.type == EventType.CONNECT) ClientCastingManager.onPlayerConnectsToServer();
             if(message.type == EventType.DISCONNECT) ClientCastingManager.onPlayerDisconnectsFromServer();
 
