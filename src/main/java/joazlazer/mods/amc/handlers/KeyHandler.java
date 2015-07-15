@@ -129,7 +129,6 @@ public class KeyHandler {
         GameSettings gs = Minecraft.getMinecraft().gameSettings;
         if(!gs.keyBindForward.getIsKeyPressed() && !gs.keyBindBack.getIsKeyPressed() && !gs.keyBindLeft.getIsKeyPressed() && !gs.keyBindRight.getIsKeyPressed() && !gs.keyBindJump.getIsKeyPressed() && !gs.keyBindSneak.getIsKeyPressed()) moving = false;
         else moving = true;
-        System.out.println(moving);
     }
 
     public static void notifyServerCastCancel() {

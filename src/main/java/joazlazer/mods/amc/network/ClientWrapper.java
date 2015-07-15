@@ -7,4 +7,5 @@ public class ClientWrapper {
     public static World getTheWorld() {
         return Minecraft.getMinecraft().theWorld;
     }
+    public static Minecraft getMinecraft() { return Minecraft.getMinecraft(); }
 }

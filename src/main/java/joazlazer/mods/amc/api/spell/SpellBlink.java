@@ -1,6 +1,9 @@
 package joazlazer.mods.amc.api.spell;
 
 import com.google.gson.JsonSyntaxException;
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import joazlazer.mods.amc.api.order.OrderAlchemia;
 import joazlazer.mods.amc.api.order.OrderArcana;
 import joazlazer.mods.amc.casting.CastingManager;
@@ -8,6 +11,7 @@ import joazlazer.mods.amc.casting.CastingStatus;
 import joazlazer.mods.amc.casting.client.ClientCastingStatus;
 import joazlazer.mods.amc.client.render.RenderHelper;
 import joazlazer.mods.amc.handlers.KeyHandler;
+import joazlazer.mods.amc.network.ClientWrapper;
 import joazlazer.mods.amc.reference.Shaders;
 import joazlazer.mods.amc.reference.Textures;
 import joazlazer.mods.amc.util.Color;
@@ -35,6 +39,7 @@ public class SpellBlink extends SpellBase {
     public static final String DURING_CAST_STATE_KEY = "duringCastStateKey";
     public static ShaderGroup grayscale;
     public static Minecraft mc;
+    public static boolean pause;
 
     public static class BlinkStatus {
         private boolean casting;
@@ -60,7 +65,7 @@ public class SpellBlink extends SpellBase {
         ArrayList<String> tt = new ArrayList<String>();
         populateTooltip(tt);
         this.setTooltip(tt);
-        mc = Minecraft.getMinecraft();
+        mc = FMLCommonHandler.instance().getSide() == Side.SERVER ? null : ClientWrapper.getMinecraft();
         /* try {
             grayscale = new ShaderGroup(mc.getTextureManager(), (IResourceManager) ReflectionHelper.getPrivateField(EntityRenderer.class, mc.entityRenderer, "resourceManager"), Minecraft.getMinecraft().getFramebuffer(), Shaders.GRAYSCALE);
             grayscale.createBindFramebuffers(mc.displayWidth, mc.displayHeight);
@@ -135,14 +140,16 @@ public class SpellBlink extends SpellBase {
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
     public void renderFirstPerson(World world, float partialTicks, ClientCastingStatus status) {
-
+        if(status == null || status.customNBT == null || !status.customNBT.hasKey("stage")) return;
         int stage = status.customNBT.getByte("stage");
+        System.out.println(!KeyHandler.moving);
         if (stage == 0) {
             RenderHelper.drawLargeOrderIcon(56, 56, new OrderAlchemia());
             if (grayscale != null) grayscale = null;
         } else if (stage == 1) {
-            if(!KeyHandler.moving) {
+            if(!KeyHandler.moving && Minecraft.getMinecraft().isSingleplayer()) {
                 if (grayscale == null) {
                     try {
                         grayscale = new ShaderGroup(mc.getTextureManager(), (IResourceManager) ReflectionHelper.getPrivateField(EntityRenderer.class, mc.entityRenderer, "resourceManager"), Minecraft.getMinecraft().getFramebuffer(), Shaders.GRAYSCALE);
@@ -151,6 +158,7 @@ public class SpellBlink extends SpellBase {
                     }
                     grayscale.createBindFramebuffers(mc.displayWidth, mc.displayHeight);
                 } else {
+                    ReflectionHelper.setPrivateField(Minecraft.class, mc, "isGamePaused", true);
                     RenderHelper.drawLargeSpellIcon(56, 56, new SpellWaterWhip(), 255);
                     GL11.glMatrixMode(GL11.GL_TEXTURE);
                     GL11.glPushMatrix();
@@ -160,20 +168,12 @@ public class SpellBlink extends SpellBase {
                     mc.getFramebuffer().bindFramebuffer(true);
                 }
             } else {
-                grayscale = null;
+
             }
         } else if (stage == 2) {
             if (grayscale != null) grayscale = null;
             RenderHelper.drawLargeSpellIcon(56, 56, new SpellEnergyBall(), 255);
         }
-        /*Minecraft mc = Minecraft.getMinecraft();
-        if (OpenGlHelper.shadersSupported) {
-            try {
-
-            } catch (JsonSyntaxException jsonsyntaxexception) {
-                LogHelper.warn("Failed to load shader: " + Shaders.GRAYSCALE);
-            }
-        } */
     }
 
     @Override
