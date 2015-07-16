@@ -1,38 +1,74 @@
 package joazlazer.mods.amccore;
 
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.tree.AbstractInsnNode;
-import org.objectweb.asm.tree.ClassNode;
-import org.objectweb.asm.tree.MethodNode;
-
+import org.objectweb.asm.*;
+import org.objectweb.asm.tree.*;
 import java.util.Iterator;
+
+import static org.objectweb.asm.Opcodes.*;
 
 public class AMCCClassTransformer implements net.minecraft.launchwrapper.IClassTransformer {
     @Override
     public byte[] transform(String workingClass, String newName, byte[] bytes) {
-        if (workingClass.equals("abq")) {
-            System.out.println("********* INSIDE OBFUSCATED EXPLOSION TRANSFORMER ABOUT TO PATCH: " + workingClass);
-            return patchClassASM(workingClass, bytes, true);
+        if (workingClass.equals("bao")) {
+            System.out.println("********* INSIDE OBFUSCATED MINECRAFT ABOUT TO PATCH: " + workingClass);
+            return patchMinecraftASM(workingClass, bytes, true);
         }
 
         if (workingClass.equals("net.minecraft.client.Minecraft")) {
-            System.out.println("********* INSIDE EXPLOSION TRANSFORMER ABOUT TO PATCH: " + workingClass);
-            return patchClassASM(workingClass, bytes, false);
+            System.out.println("********* INSIDE MINECRAFT ABOUT TO PATCH: " + workingClass);
+            return patchMinecraftASM(workingClass, bytes, false);
+        }
+
+        if (workingClass.equals("bsx")) {
+            System.out.println("********* INSIDE OBFUSCATED INTEGRATED SERVER ABOUT TO PATCH: " + workingClass);
+            return patchIntegratedServerASM(workingClass, bytes, false);
+        }
+
+        if (workingClass.equals("net.minecraft.server.integrated.IntegratedServer")) {
+            System.out.println("********* INSIDE INTEGRATED SERVER ABOUT TO PATCH: " + workingClass);
+            return patchIntegratedServerASM(workingClass, bytes, false);
         }
 
         return bytes;
     }
 
-    public byte[] patchClassASM(String name, byte[] bytes, boolean obfuscated) {
-        String targetMethodName;
+    public byte[] patchMinecraftASM(String name, byte[] bytes, boolean obfuscated) {
+        //String targetMethodName = obfuscated ? "ak" : "runGameLoop";
 
+        byte[] bcode; {
+            ClassReader classReader = new ClassReader(bytes);
+            ClassWriter classWriter = new ClassWriter(classReader, Opcodes.ASM4);
+            CustomClassVisitor ccv = new CustomClassVisitor(classWriter);
+            classReader.accept(ccv, 0);
+            bcode = classWriter.toByteArray();
+        }
+
+        //set up ASM class manipulation stuff. Consult the ASM docs for details
+        ClassReader cr = new ClassReader(bcode);
+        ClassNode classNode = new ClassNode();
+        cr.accept(classNode, 0);
+
+        Iterator<FieldNode> fields = classNode.fields.iterator();
+        while(fields.hasNext()) {
+            FieldNode f = fields.next();
+            System.out.println(f.name);
+        }
+
+        return bcode;
+
+
+
+
+
+    }
+
+    public byte[] patchIntegratedServerASM(String name, byte[] bytes, boolean obfuscated) {
+        String targetMethodName;
         //Our target method
         if (obfuscated == true)
-            targetMethodName = "as";
+            targetMethodName = "u";
         else
-            targetMethodName = "runGameLoop";
-
+            targetMethodName = "tick";
 
         //set up ASM class manipulation stuff. Consult the ASM docs for details
         ClassNode classNode = new ClassNode();
@@ -43,81 +79,91 @@ public class AMCCClassTransformer implements net.minecraft.launchwrapper.IClassT
         Iterator<MethodNode> methods = classNode.methods.iterator();
         while (methods.hasNext()) {
             MethodNode m = methods.next();
-            int fdiv_index = -1;
 
             //Check if this is runGameLoop and it's method signature is ()V which means that it returns a void (V)
             if ((m.name.equals(targetMethodName) && m.desc.equals("()V"))) {
-                System.out.println("********* Inside target method!");
-
-                AbstractInsnNode currentNode = null;
+                LabelNode L5 = null;
                 AbstractInsnNode targetNode = null;
+                System.out.println("********* Inside target method!");
+                {
+                    AbstractInsnNode currentNode;
 
-                @SuppressWarnings("unchecked")
-                Iterator<AbstractInsnNode> iter = m.instructions.iterator();
+                    @SuppressWarnings("unchecked")
+                    Iterator<AbstractInsnNode> iter = m.instructions.iterator();
 
-                int index = -1;
+                    int c = 0;
 
-                /*
-                //Loop over the instruction set and find the instruction FDIV which does the division of 1/explosionSize
-                while (iter.hasNext()) {
-                    index++;
-                    currentNode = iter.next();
+                    //Loop over the instruction set and find the instruction L5 node.
+                    while (iter.hasNext()) {
+                        currentNode = iter.next();
 
-                    //Found it! save the index location of instruction FDIV and the node for this instruction
-                    if (currentNode.getOpcode() == FDIV) {
-                        targetNode = currentNode;
-                        fdiv_index = index;
+                        //Found it! save the index location of instruction L5 node.
+                        if (currentNode.getOpcode() == ICONST_0) {
+                            c++;
+                            if (c == 2) {
+                                iter.next();
+                                L5 = (LabelNode) iter.next();
+                                System.out.println("found it!");
+                                System.out.println(L5);
+                            }
+                        }
                     }
                 }
 
-                //now we want the save nods that load the variable explosionSize and the division instruction:
+                {
+                    AbstractInsnNode currentNode;
 
-                /*
-                mv.visitInsn(FCONST_1);
-                mv.visitVarInsn(ALOAD, 0);
-                mv.visitFieldInsn(GETFIELD, "net/minecraft/src/Explosion", "explosionSize", "F");
-                mv.visitInsn(FDIV);
-                mv.visitInsn(ICONST_0);
-                mv.visitMethodInsn(INVOKEVIRTUAL, "net/minecraft/src/Block", "dropBlockAsItemWithChance", "(Lnet/minecraft/src/World;IIIIFI)V");
+                    @SuppressWarnings("unchecked")
+                    Iterator<AbstractInsnNode> iter = m.instructions.iterator();
 
+                    int c = 0;
 
-                AbstractInsnNode remNode1 = m.instructions.get(fdiv_index - 2); // mv.visitVarInsn(ALOAD, 0);
-                AbstractInsnNode remNode2 = m.instructions.get(fdiv_index - 1); // mv.visitFieldInsn(GETFIELD, "net/minecraft/src/Explosion", "explosionSize", "F");
-                AbstractInsnNode remNode3 = m.instructions.get(fdiv_index); // mv.visitInsn(FDIV);
+                    //Loop over the instruction set and find the instruction IFEQ node that goes to L5.
+                    while (iter.hasNext()) {
+                        currentNode = iter.next();
 
+                        //Found it! save the index location of instruction IFEQ and the second node for this instruction
+                        if (currentNode.getOpcode() == IFEQ) {
+                            c++;
+                            if (c == 2) {
+                                targetNode = currentNode;
+                                System.out.println("found it!");
+                                System.out.println(targetNode.toString());
+                            }
+                        }
+                    }
+                }
 
-                //just remove these nodes from the instruction set, this will prevent the instruction FCONST_1 to be divided.
-
-                m.instructions.remove(remNode1);
-                m.instructions.remove(remNode2);
-                m.instructions.remove(remNode3);
-
-
-                //in this section, i'll just illustrate how to inject a call to a static method if your instruction is a little more advanced than just removing a couple of instruction:
-
-                /*
-                To add new instructions, such as calling a static method can be done like so:
-
-                // make new instruction list
+                // Make new instruction list
                 InsnList toInject = new InsnList();
 
-                //add your own instruction lists: *USE THE ASM JAVADOC AS REFERENCE*
+                // Add own instruction lists.
                 toInject.add(new VarInsnNode(ALOAD, 0));
-                toInject.add(new MethodInsnNode(INVOKESTATIC, "mod/culegooner/MyStaticClass", "myStaticMethod", "()V"));
+                toInject.add(new FieldInsnNode(GETFIELD, "net/minecraft/client/Minecraft", "inMenu", org.objectweb.asm.Type.BOOLEAN_TYPE.getDescriptor()));
+                toInject.add(new JumpInsnNode(IFEQ, L5));
 
-                // add the added code to the nstruction list
-                // You can also choose if you want to add the code before or after the target node, check the ASM Javadoc (insertBefore)
+
                 m.instructions.insert(targetNode, toInject);
-                */
 
                 System.out.println("Patching Complete!");
                 break;
             }
         }
-
         //ASM specific for cleaning up and returning the final bytes for JVM processing.
         ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
         classNode.accept(writer);
         return writer.toByteArray();
+    }
+
+    public static class CustomClassVisitor extends ClassVisitor {
+        public CustomClassVisitor(ClassVisitor cv) {
+            super(ASM5, cv);
+        }
+
+        @Override
+        public void visitEnd() {
+            super.visitField(Opcodes.ACC_PUBLIC, "inMenu", Type.BOOLEAN_TYPE.getDescriptor(), null, null);
+            super.visitEnd();
+        }
     }
 }
