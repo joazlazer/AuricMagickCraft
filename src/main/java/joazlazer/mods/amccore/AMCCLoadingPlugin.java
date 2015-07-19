@@ -10,7 +10,7 @@ import java.util.Map;
 public class AMCCLoadingPlugin implements IFMLLoadingPlugin {
     @Override
     public String[] getASMTransformerClass() {
-        return new String[]{AMCCClassTransformer.class.getName()};
+        return new String[]{AMCCCVisitorTransformerWrapper.class.getName()};
     }
 
     @Override

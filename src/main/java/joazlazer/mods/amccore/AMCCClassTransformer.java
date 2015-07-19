@@ -10,11 +10,11 @@ public class AMCCClassTransformer implements net.minecraft.launchwrapper.IClassT
     @Override
     public byte[] transform(String workingClass, String newName, byte[] bytes) {
         if (newName.equals("net.minecraft.client.Minecraft")) {
-            System.out.println("[AMCCore] Patching " + workingClass);
-            return patchMinecraftASM(workingClass, bytes, false);
+            System.out.println("[AMCCore] Patching " + newName);
+            return patchMinecraftASM(newName, bytes, false);
         } else if (newName.equals("net.minecraft.server.integrated.IntegratedServer")) {
-            System.out.println("[AMCCore] Patching " + workingClass);
-            return patchIntegratedServerASM(workingClass, bytes, false);
+            System.out.println("[AMCCore] Patching " + newName);
+            return patchIntegratedServerASM(newName, bytes, false);
         }
 
         return bytes;
@@ -78,8 +78,9 @@ public class AMCCClassTransformer implements net.minecraft.launchwrapper.IClassT
 
             @Override
             public void visitInsn(int opcode) {
-                super.visitCode();
+                super.visitInsn(opcode);
                 if(opcode == Opcodes.IFEQ) {
+                    System.out.println("IFEQ " + (counter + 1));
                     counter++;
                     if(counter == 2) {
                         mylabel = new Label();

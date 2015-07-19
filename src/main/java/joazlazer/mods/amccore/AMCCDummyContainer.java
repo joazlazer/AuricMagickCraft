@@ -17,9 +17,10 @@ public class AMCCDummyContainer extends DummyModContainer {
         super(new ModMetadata());
         ModMetadata meta = getMetadata();
         meta.modId = "AMCCore";
-        meta.name = "AMCCore";
-        meta.version = "@VERSION@";
+        meta.name = "Auric Magick Craft Core";
+        meta.version = "1.7.10-1.0";
         meta.authorList = Arrays.asList("joazlazer");
+        meta.credits = "Much thanks to diesieben07 for helping me through ASM and letting me use his awesome API.";
         meta.description = "The core mod providing tweaks for Auric Magick Craft.";
         meta.url = "";
         meta.updateUrl = "";
