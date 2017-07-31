@@ -30,7 +30,7 @@ public class GuiProxy implements IGuiHandler {
         TileEntity te = world.getTileEntity(pos);
         if (te instanceof TileEntityAwakeningTable) {
             TileEntityAwakeningTable containerTileEntity = (TileEntityAwakeningTable) te;
-            return new GuiAwakeningTable(containerTileEntity, null/*new ContainerAwakeningTable(player.inventory, containerTileEntity)*/);
+            return new GuiAwakeningTable(containerTileEntity, new ContainerAwakeningTable(player.inventory, containerTileEntity));
         }
         return null;
     }
