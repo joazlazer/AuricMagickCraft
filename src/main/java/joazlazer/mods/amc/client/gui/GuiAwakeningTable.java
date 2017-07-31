@@ -1,372 +1,358 @@
 package joazlazer.mods.amc.client.gui;
 
-import joazlazer.mods.amc.AuricMagickCraft;
 import joazlazer.mods.amc.api.order.OrderBase;
-import joazlazer.mods.amc.api.order.OrderRegistry;
-import joazlazer.mods.amc.api.spell.SpellBase;
-import joazlazer.mods.amc.client.gui.component.GuiButton;
 import joazlazer.mods.amc.client.gui.component.GuiRectangle;
-import joazlazer.mods.amc.client.render.RenderHelper;
-import joazlazer.mods.amc.container.ContainerAwakeningTable;
-import joazlazer.mods.amc.handlers.NetworkHandler;
-import joazlazer.mods.amc.network.MessagePlayerRespawn;
-import joazlazer.mods.amc.reference.Textures;
-import joazlazer.mods.amc.tileentity.TileEntityAwakeningTable;
-import joazlazer.mods.amc.util.Color;
-import joazlazer.mods.amc.util.GuiColor;
+import joazlazer.mods.amc.common.container.ContainerAwakeningTable;
+import joazlazer.mods.amc.common.reference.Reference;
+import joazlazer.mods.amc.common.tileentity.TileEntityAwakeningTable;
+import joazlazer.mods.amc.utility.GuiColor;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.StatCollector;
-import org.lwjgl.opengl.GL11;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiUtilRenderComponents;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+
+import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GuiAwakeningTable extends GuiContainerAMC {
+    public static final int WIDTH = 398;
+    public static final int HEIGHT = 222;
+    public static final int TEXTURE_SIZE = 512;
 
-    private float progress;
-    public int page = 0;
-    public int maxPage = 1;
-    public OrderBase selectedOrder;
-    net.minecraft.client.gui.GuiButton awakenButton;
-    private boolean isAwakening;
-    public boolean closeSoon;
+    public static final int AWAKEN_BUTTON_X = 87;
+    public static final int AWAKEN_BUTTON_Y = 195;
+    public static final int AWAKEN_BUTTON_W = 98;
+    public static final int AWAKEN_BUTTON_H = 14;
 
-    @Override
-    public void onButtonClicked(GuiButton button, int mouseX, int mouseY, int mouseButton) {
+    private final TileEntityAwakeningTable te;
+    private static final ResourceLocation background = new ResourceLocation(Reference.MOD_ID, "textures/gui/awakening_table.png");
+    private GuiOrderList orderList;
+    private GuiOrderInfoList orderInfoList;
+    private int selectedOrderPanelIndex = -1;
+    private OrderBase[] orderObjects;
+    GuiButton awakenButton;
 
-    }
+    public GuiAwakeningTable(TileEntityAwakeningTable tileEntity, ContainerAwakeningTable container) {
+        super(container, WIDTH, HEIGHT);
+        te = tileEntity;
 
-    public static class CONSTANTS {
-        public static class AWAKEN {
-            public static final int BUTTON_X = 139;
-            public static final int BUTTON_Y = 191;
-            public static final int BUTTON_W = 70;
-            public static final int BUTTON_H = 16;
-            public static final float AWAKEN_OPACITY_FINISH = 180.0f;
-            public static final float AWAKEN_SPEED = 3.0f;
-
-        }
-
-        public static class SPELLS {
-            public static final int INFO_PANEL_X = 89;
-            public static final int INFO_PANEL_Y = 97;
-            public static final int INFO_PANEL_W = 112;
-            public static final int INFO_PANEL_H = 80;
-            public static final int INFO_PANEL_MAX_W = 7;
-            public static final int INFO_PANEL_MAX_H = 5;
-            public static final int INFO_PANEL_ITEM_W = 16;
-            public static final int INFO_PANEL_ITEM_H = 16;
-        }
-
-        public static class GLOBAL {
-            public static final int X_SIZE = 215;
-            public static final int Y_SIZE = 192;
-        }
-
-        public static class TEXT {
-            public static final String UNLOC_SPELLS = "container.amc:spells";
-            public static final String UNLOC_ORDERS = "container.amc:orders";
-            public static final int SPELLS_X = 85;
-            public static final int SPELLS_Y = 78;
-            public static final int ORDERS_X = 13;
-            public static final int ORDERS_Y = 78;
-            public static final int ORDER_NAME_X = 39;
-            public static final int ORDER_NAME_Y = 18;
-        }
-
-        public static class ORDERS {
-            public static final int SELECT_PANEL_ORDER_MAX_W = 3;
-            public static final int SELECT_PANEL_ORDER_MAX_H = 5;
-            public static final int SELECT_PANEL_START_X = 16;
-            public static final int SELECT_PANEL_START_Y = 97;
-            public static final int SELECT_PANEL_ITEM_W = 16;
-            public static final int SELECT_PANEL_ITEM_H = 16;
-
-            public static final int SELECTION_CIRCLE_ICON_START_X = 25;
-            public static final int SELECTION_CIRCLE_ICON_START_Y = 26;
-        }
+        // Call to order registry
+        List<OrderBase> orders = OrderBase.registry.getValues();
+        orderObjects = new OrderBase[orders.size()];
+        orders.toArray(orderObjects);
     }
 
     @Override
     public void initGui() {
-        // Calculate the x and y of the top corner of the gui.
-        int x = (width - xSize) / 2;
-        int y = (height - ySize) / 2;
-        this.guiLeft = x - 4;
-        this.guiTop = y - 24;
-
-        buttonList.clear();
-        buttonList.add(awakenButton = new net.minecraft.client.gui.GuiButton(0, this.getGuiLeft() + CONSTANTS.AWAKEN.BUTTON_X, this.getGuiTop() + CONSTANTS.AWAKEN.BUTTON_Y, CONSTANTS.AWAKEN.BUTTON_W, CONSTANTS.AWAKEN.BUTTON_H, StatCollector.translateToLocal("container.amc:awaken")));
         super.initGui();
-    }
-
-    public OrderBase[] orderObjs;
-    public SpellBase[][] spellObjs;
-    public GuiRectangle[] orders;
-    public GuiRectangle[][] spells;
-
-    public GuiAwakeningTable(InventoryPlayer inventory, TileEntityAwakeningTable te) {
-        super(new ContainerAwakeningTable(inventory, te));
-        xSize = CONSTANTS.GLOBAL.X_SIZE;
-        ySize = CONSTANTS.GLOBAL.Y_SIZE;
-
-        // TODO: TEST
-        AuricMagickCraft.PlayerTracker.awaken(inventory.player, new OrderBase() {
-            @Override
-            public String getUnlocName() {
-                return "mahnameisbahb";
-            }
-        });
-
-        orderObjs = new OrderBase[OrderRegistry.getOrders().size()];
-        spellObjs = new SpellBase[OrderRegistry.getOrders().size()][];
-        for (int i = 0; i < OrderRegistry.getOrders().size(); i++) {
-            OrderBase order = (OrderBase) OrderRegistry.getOrders().get(i);
-            orderObjs[i] = order;
-            for (int j = 0; j < order.getSpells().size(); j++) {
-                spellObjs[i] = new SpellBase[order.getSpells().size()];
-                spellObjs[i][j] = order.getSpells().get(j);
-            }
-        }
-        System.out.println(OrderRegistry.getOrders().size());
-        System.out.println(OrderRegistry.getOrder(0).getSpells().size());
-
-        orders = new GuiRectangle[Math.min(orderObjs.length, CONSTANTS.ORDERS.SELECT_PANEL_ORDER_MAX_W * CONSTANTS.ORDERS.SELECT_PANEL_ORDER_MAX_H)];
-        spells = new GuiRectangle[OrderRegistry.getOrders().size()][];
-
-        for (int i = 0; i < orders.length && i < CONSTANTS.ORDERS.SELECT_PANEL_ORDER_MAX_W * CONSTANTS.ORDERS.SELECT_PANEL_ORDER_MAX_H; i++) {
-            int xItemPos = i / CONSTANTS.ORDERS.SELECT_PANEL_ORDER_MAX_W;
-            int yItemPos = i % CONSTANTS.ORDERS.SELECT_PANEL_ORDER_MAX_W;
-            int xPos = CONSTANTS.ORDERS.SELECT_PANEL_START_X + (xItemPos * CONSTANTS.ORDERS.SELECT_PANEL_ITEM_W);
-            int yPos = CONSTANTS.ORDERS.SELECT_PANEL_START_Y + (yItemPos * CONSTANTS.ORDERS.SELECT_PANEL_ITEM_H);
-            orders[i] = new GuiRectangle(xPos, yPos, CONSTANTS.ORDERS.SELECT_PANEL_ITEM_W, CONSTANTS.ORDERS.SELECT_PANEL_ITEM_H);
-        }
-
-        for (int i = 0; i < OrderRegistry.getOrders().size(); i++) {
-            spells[i] = new GuiRectangle[Math.min(spellObjs[i].length, CONSTANTS.SPELLS.INFO_PANEL_MAX_W * CONSTANTS.SPELLS.INFO_PANEL_MAX_H)];
-
-            for (int j = 0; j < spells[i].length && j < CONSTANTS.SPELLS.INFO_PANEL_MAX_W * CONSTANTS.SPELLS.INFO_PANEL_MAX_H; j++) {
-                int xItemPos = j / CONSTANTS.SPELLS.INFO_PANEL_MAX_W;
-                int yItemPos = j % CONSTANTS.SPELLS.INFO_PANEL_MAX_W;
-                int xPos = CONSTANTS.SPELLS.INFO_PANEL_X + (xItemPos * CONSTANTS.SPELLS.INFO_PANEL_W);
-                int yPos = CONSTANTS.SPELLS.INFO_PANEL_Y + (yItemPos * CONSTANTS.SPELLS.INFO_PANEL_H);
-                System.out.println(spells[i].length);
-                System.out.println(j);
-                spells[i][j] = new GuiRectangle(xPos, yPos, CONSTANTS.SPELLS.INFO_PANEL_ITEM_W, CONSTANTS.SPELLS.INFO_PANEL_ITEM_H);
-            }
-        }
-
-        // Reset the awakening variable.
-        isAwakening = false;
-
-        // Reset the progress of the awakening.
-        progress = 0.0f;
-    }
-
-    @Override
-    protected void drawGuiContainerBackgroundLayer(float f0, int mouseX, int mouseY) {
-        if (!isAwakening) {
-            // Reset the OpenGL colors to prepare for rendering.
-            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-
-            // Bind the gui texture.
-            this.mc.renderEngine.bindTexture(Textures.Gui.AWAKENING_TABLE);
-
-            // Calculate the x and y of the top corner of the gui.
-            int x = (width - xSize) / 2;
-            int y = (height - ySize) / 2;
-            this.guiLeft = x - 4;
-            this.guiTop = y - 24;
-
-            // Enable transparency.
-            GL11.glEnable(GL11.GL_BLEND);
-
-            // Draw the background.
-            this.drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
-
-            for (int i = 0; i < orders.length; i++) {
-                GuiRectangle rect = orders[i];
-                if (isOrderPresentAtScrolledPosition(i)) {
-                    RenderHelper.drawOrderIcon(this.getGuiLeft() + rect.getX(), this.getGuiTop() + rect.getY(), orderObjs[CONSTANTS.ORDERS.SELECT_PANEL_ITEM_H * page + i]);
-                }
-            }
-
-            if (selectedOrder != null) {
-                RenderHelper.drawLargeOrderIcon(this.getGuiLeft() + CONSTANTS.ORDERS.SELECTION_CIRCLE_ICON_START_X, this.getGuiTop() + CONSTANTS.ORDERS.SELECTION_CIRCLE_ICON_START_Y, selectedOrder);
-
-                int index = OrderRegistry.getOrders().indexOf(selectedOrder);
-                for (int i = 0; i < spells[index].length; i++) {
-                    GuiRectangle rect = spells[index][i];
-                    if (spellObjs[index][i] != null) {
-                        RenderHelper.drawSpellIcon(this.getGuiLeft() + rect.getX(), this.getGuiTop() + rect.getY(), spellObjs[index][i]);
-                    }
-                }
-            }
-        }
+        orderList = new GuiOrderList(this);
+        orderInfoList = new GuiOrderInfoList(this);
+        buttonList.clear();
+        buttonList.add(awakenButton = new GuiButton(0, this.getGuiLeft() + AWAKEN_BUTTON_X, this.getGuiTop() + AWAKEN_BUTTON_Y, AWAKEN_BUTTON_W, AWAKEN_BUTTON_H, I18n.format("container.amc:awakening_table.awaken")));
+        updateScreen();
     }
 
     @Override
     public void updateScreen() {
-        if (isAwakening) {
-            progress += CONSTANTS.AWAKEN.AWAKEN_SPEED;
+        super.updateScreen();
+        if(selectedOrderPanelIndex == -1) {
+            awakenButton.enabled = false;
+        } else awakenButton.enabled = true;
+    }
 
-            if (progress > CONSTANTS.AWAKEN.AWAKEN_OPACITY_FINISH - (CONSTANTS.AWAKEN.AWAKEN_OPACITY_FINISH * 0.1f)) {
-                closeSoon = true;
-            }
+    @Override
+    protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
+        this.drawDefaultBackground();
 
-            if (progress >= CONSTANTS.AWAKEN.AWAKEN_OPACITY_FINISH) {
-                // Teleport the player to the respawn location.
-                NetworkHandler.Network.sendToServer(new MessagePlayerRespawn(Minecraft.getMinecraft().thePlayer.getDisplayName()));
-
-                // Send a message to the player.
-                this.mc.thePlayer.addChatMessage(new ChatComponentText(GuiColor.ITALIC + GuiColor.CYAN.toString() + "Your awakened senses are too much for you to handle."));
-                this.mc.thePlayer.addChatMessage(new ChatComponentText(GuiColor.ITALIC + GuiColor.CYAN.toString() + "You have been returned to your hearth."));
-
-                // Send a packet of awakening.
-                AuricMagickCraft.PlayerTracker.awaken(Minecraft.getMinecraft().thePlayer, selectedOrder);
-
-                // Close the gui.
-                Minecraft.getMinecraft().displayGuiScreen(null);
-            }
-        } else {
-            if (selectedOrder != null) {
-                awakenButton.enabled = true;
-            } else awakenButton.enabled = false;
-            super.updateScreen();
+        GlStateManager.pushMatrix(); {
+            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+            GlStateManager.enableBlend();
+            GlStateManager.enableAlpha();
+            this.mc.getTextureManager().bindTexture(background);
+            drawModalRectWithCustomSizedTexture(guiLeft, guiTop, 0f, 0f, WIDTH, HEIGHT, TEXTURE_SIZE, TEXTURE_SIZE);
         }
-    }
-
-    /* (non-Javadoc)
-	 * @see net.minecraft.client.gui.GuiScreen#drawBackground(int)
-	 */
-    @Override
-    public void drawBackground(int par1) {
-        if (isAwakening) {
-            // Get the correct scaled width and height.
-            ScaledResolution scaledresolution = new ScaledResolution(this.mc, this.mc.displayWidth, this.mc.displayHeight);
-            int width = scaledresolution.getScaledWidth();
-            int height = scaledresolution.getScaledHeight();
-
-            // Disable the unwanted OpenGL effects.
-            GL11.glDisable(GL11.GL_DEPTH_TEST);
-            GL11.glDisable(GL11.GL_ALPHA_TEST);
-
-            // Get the current progress.
-            float currProgress = this.progress;
-
-            // Calculate the percent of opacity to render;
-            float percent = (float)currProgress / CONSTANTS.AWAKEN.AWAKEN_OPACITY_FINISH;
-
-            // Create a color using the base color and bit shift the opacity into it.
-            int j1 = (int)(220.0F * percent) << 24 | 1052704;
-
-            // Draw the rectangle.
-            drawRect(0, 0, width, height, j1);
-
-            // Enable the unwanted OpenGL effects we disabled earlier.
-            GL11.glEnable(GL11.GL_ALPHA_TEST);
-            GL11.glEnable(GL11.GL_DEPTH_TEST);
-        }
-        else super.drawBackground(0);
-    }
-
-    /* (non-Javadoc)
-	 * @see net.minecraft.client.gui.GuiScreen#drawScreen(int, int, float)
-	 */
-    @Override
-    public void drawScreen(int par1, int par2, float par3) {
-        if (isAwakening) this.drawBackground(0);
-        else super.drawScreen(par1, par2, par3);
+        GlStateManager.popMatrix();
     }
 
     @Override
-    public void onGuiClosed() {
-        super.onGuiClosed();
+    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+        super.drawScreen(mouseX, mouseY, partialTicks);
+        orderList.drawScreen(mouseX, mouseY, partialTicks);
+        orderInfoList.drawScreen(mouseX, mouseY, partialTicks);
+        orderList.drawForeground(mouseX, mouseY);
+        orderInfoList.drawForeground(mouseX, mouseY);
     }
 
-    @Override
-    protected void drawGuiContainerForegroundLayer(int i0, int i1) {
-        if (!isAwakening) {
-            // Calculate the x and y of the top corner of the gui.
-            int x = (width - xSize) / 2;
-            int y = (height - ySize) / 2;
-            this.guiLeft = x - 4;
-            this.guiTop = y - 24;
-
-            this.drawString(fontRendererObj, StatCollector.translateToLocal(CONSTANTS.TEXT.UNLOC_SPELLS), CONSTANTS.TEXT.SPELLS_X, CONSTANTS.TEXT.SPELLS_Y, new Color(32, 92, 52).toRGB());
-            this.drawString(fontRendererObj, StatCollector.translateToLocal(CONSTANTS.TEXT.UNLOC_ORDERS), CONSTANTS.TEXT.ORDERS_X, CONSTANTS.TEXT.ORDERS_Y, new Color(32, 92, 52).toRGB());
-
-            if (selectedOrder != null) {
-                GL11.glScalef(2.0f, 2.0f, 1.0f);
-                this.drawString(fontRendererObj, StatCollector.translateToLocal("order." + selectedOrder.getUnlocName() + ".name"), CONSTANTS.TEXT.ORDER_NAME_X, CONSTANTS.TEXT.ORDER_NAME_Y, new Color(248, 228, 48).toRGB());
-                GL11.glScalef(0.5f, 0.5f, 1.0f);
-            }
-
-            for (int i = 0; i < orders.length; i++) {
-                GuiRectangle rect = orders[i];
-                if (isOrderPresentAtScrolledPosition(i) && orders[i].inRect(this, i0, i1)) {
-                    OrderBase order = orderObjs[(CONSTANTS.ORDERS.SELECT_PANEL_ITEM_H * page) + i];
-                    this.drawHoveringText(order.getTooltip(), i0 - getGuiLeft(), i1 - getGuiTop(), this.fontRendererObj);
-                }
-            }
-
-            if (selectedOrder != null) {
-                int index = OrderRegistry.getOrders().indexOf(selectedOrder);
-                for (int i = 0; i < spells[index].length; i++) {
-                    GuiRectangle rect = spells[index][i];
-                    if (spellObjs[index][i] != null && spells[index][i].inRect(this, i0, i1)) {
-                        this.drawHoveringText(spellObjs[index][i].getTooltip(), i0 - getGuiLeft(), i1 - getGuiTop(), this.fontRendererObj);
-                    }
-                }
-            }
-
-            GL11.glColor4f(128f, 128f, 128f, 255f);
-        }
+    private void selectOrder() {
+        orderInfoList = new GuiOrderInfoList(this);
     }
 
-    @Override
-    public void mouseClicked(int mouseX, int mouseY, int button) {
-        if (!isAwakening) {
-            for (int i = 0; i < orders.length; i++) {
-                GuiRectangle rect = orders[i];
-                if (rect.inRect(this, mouseX, mouseY) && isOrderPresentAtScrolledPosition(i)) {
-                    OrderBase order = orderObjs[CONSTANTS.ORDERS.SELECT_PANEL_ITEM_H * page + i];
-                    if (selectedOrder == order) selectedOrder = null;
-                    else selectedOrder = order;
-                }
-            }
-
-            System.out.println("mouseClicked");
-            System.out.println(awakenButton.xPosition);
-            System.out.println(awakenButton.yPosition);
-            System.out.println(awakenButton.width);
-            System.out.println(awakenButton.height);
-            System.out.println(mouseX);
-            System.out.println(mouseY);
-
-            if (mouseX >= awakenButton.xPosition && mouseY >= awakenButton.yPosition && mouseX <= awakenButton.xPosition + awakenButton.width && mouseY <= awakenButton.yPosition + awakenButton.height) {
-                System.out.println("InRect");
-                this.actionPerformed(awakenButton);
-            }
-        }
-    }
-
-    public boolean isOrderPresentAtScrolledPosition(int i) {
-        if (orderObjs.length > (page * CONSTANTS.ORDERS.SELECT_PANEL_ITEM_H) + i) return true;
-        else return false;
+    public OrderBase getSelectedOrder() {
+        if(selectedOrderPanelIndex == -1) return null;
+        else return orderObjects[selectedOrderPanelIndex];
     }
 
     @Override
     protected void actionPerformed(net.minecraft.client.gui.GuiButton button) {
-        if (!isAwakening) {
-            System.out.println(button.id);
-            switch (button.id) {
-                case 0: {
-                    isAwakening = true;
-                    break;
+        if(button.id == 0) {
+            te.awakeningTicks = 0;
+            Minecraft.getMinecraft().displayGuiScreen(new GuiAwakeningScreen(te));
+        }
+    }
+
+    abstract static class GuiAwakeningScrollingList extends GuiScrollingList {
+        protected GuiAwakeningTable parent;
+
+        public GuiAwakeningScrollingList(GuiAwakeningTable parentGui, int left, int top, int width, int height) {
+            super(Minecraft.getMinecraft(), width, height,
+                    parentGui.getGuiTop() + top, parentGui.getGuiTop() + top + height,parentGui.getGuiLeft() + left,
+                    1, parentGui.width, parentGui.height);
+            parent = parentGui;
+            this.setHeaderInfo(true, getHeaderHeight());
+            this.scrollBarShadingColor = new Color(0x3E2C1E);
+            this.scrollBarFillColor = new Color(0x523828);
+            this.scrollBarBackground = new Color(0,0,0, 36);
+        }
+
+        @Override protected int getSize() { return 0; }
+        @Override protected void elementClicked(int index, boolean doubleClick) { }
+        @Override protected boolean isSelected(int index) { return false; }
+        @Override protected void drawBackground() {}
+        @Override protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess) { }
+
+        abstract protected int getHeaderHeight();
+    }
+
+    private static class GuiOrderList extends GuiAwakeningScrollingList {
+        private static final int SLOT_SIZE = 20;
+        private static final int SLOTS_X = 2;
+        private static final int SLOTS_Y = 5;
+        private static final int SLOT_ORDER_OFFSET = 2;
+        private static final int SLOT_SPRITE_U = 0;
+        private static final int SLOT_SPRITE_V = 224;
+        private static final int SLOT_HOVERED_SPRITE_U = 20;
+        private static final int SLOT_HOVERED_SPRITE_V = 224;
+        private static final int SLOT_CLICKED_SPRITE_U = 40;
+        private static final int SLOT_CLICKED_SPRITE_V = 224;
+
+        private static final int LIST_WIDTH = 46;
+        private static final int LIST_HEIGHT = 120;
+        private static final int LIST_LEFT = 16;
+        private static final int LIST_TOP = 16;
+
+        private int tooltipIndex = -1;
+
+        public GuiOrderList(GuiAwakeningTable parentGui) {
+            super(parentGui, LIST_LEFT, LIST_TOP, LIST_WIDTH, LIST_HEIGHT);
+        }
+
+        @Override
+        protected int getHeaderHeight() {
+            int hHeight = ((parent.orderObjects.length - 1) / 2 + 1) * SLOT_SIZE;
+            return hHeight;
+        }
+
+        @Override
+        protected void drawHeader(int entryRight, int relativeY, Tessellator tess) {
+            tooltipIndex = -1;
+
+            // Loop through each order
+            for(int i = 0; i < parent.orderObjects.length; ++i) {
+                // Relative X position created by an offset from guiLeft plus the x position as defined by the order grid
+                int x = LIST_LEFT + ((i % SLOTS_X) * SLOT_SIZE);
+                // Relative Y position created by the current scrolled position (which previously included guiTop) plus
+                // the y position as defined by the order grid. Finally, subtract an arbitrary vertical offset depending
+                // on whether the grid is full or not
+                int y = relativeY - parent.getGuiTop() + ((i / SLOTS_X) * SLOT_SIZE) + getArbitraryYOffset() ;
+
+                // Retrieve the current OrderBase representing the order being rendered
+                OrderBase order = parent.orderObjects[i];
+
+                // Start by using the normal slot texture
+                int texU = SLOT_SPRITE_U;
+                int texV = SLOT_SPRITE_V;
+
+                // Is this order slot selected?
+                boolean isSelected = parent.selectedOrderPanelIndex != -1 && parent.selectedOrderPanelIndex == i;
+
+                // Is the mouse button over this scroll panel?
+                boolean isHovering = mouseX >= this.left && mouseX <= this.left + this.listWidth &&
+                        mouseY >= this.top && mouseY <= this.bottom;
+
+                // Is the mouse button over this order slot (doesn't account for scissor hiding)
+                boolean isMouseOverSlot = GuiRectangle.inRect(parent, this.mouseX ,this.mouseY, x, y, SLOT_SIZE, SLOT_SIZE);
+
+                // If the mouse is hovering over the panel and inside the scroll panel?
+                if(isMouseOverSlot && isHovering) {
+                    // Mark this order to render a tooltip for it
+                    tooltipIndex = i;
+                    if(!isSelected) {
+                        // If the user is just hovering, use the hovering slot texture
+                        texU = SLOT_HOVERED_SPRITE_U;
+                        texV = SLOT_HOVERED_SPRITE_V;
+                    }
+                }
+
+                if(isSelected) {
+                    // If this order is selected, use the selected slot texture
+                    texU = SLOT_CLICKED_SPRITE_U;
+                    texV = SLOT_CLICKED_SPRITE_V;
+                }
+
+                // Finally, draw the slot using the selected texture
+                Minecraft.getMinecraft().getTextureManager().bindTexture(GuiAwakeningTable.background);
+                GuiAwakeningTable.drawModalRectWithCustomSizedTexture(parent.guiLeft + x, parent.guiTop + y, texU, texV, SLOT_SIZE, SLOT_SIZE, TEXTURE_SIZE, TEXTURE_SIZE);
+
+                // Draw order icon
+                joazlazer.mods.amc.client.render.RenderHelper.drawOrderIcon(parent.guiLeft + x + SLOT_ORDER_OFFSET, parent.guiTop + y + SLOT_ORDER_OFFSET, order);
+            }
+        }
+
+        public void drawForeground(int mouseX, int mouseY) {
+            if(tooltipIndex != -1) {
+                parent.drawHoverString(parent.orderObjects[tooltipIndex].getTooltip(), mouseX, mouseY);
+            }
+        }
+
+        @Override
+        protected void clickHeader(int x, int y) {
+            // Handle clicking on order
+            for(int i = 0; i < parent.orderObjects.length; ++i) {
+                int left = (i % SLOTS_X) * SLOT_SIZE;
+                int top = (i / SLOTS_X) * SLOT_SIZE;
+                if(x >= left && x <= left + SLOT_SIZE && y >= top + getArbitraryYOffset() && y <= top + SLOT_SIZE + getArbitraryYOffset()) {
+                    parent.selectedOrderPanelIndex = i;
+                    parent.selectOrder();
                 }
             }
         }
-        super.actionPerformed(button);
+        private int getArbitraryYOffset() {
+            int offset = -(parent.orderObjects.length <= SLOTS_X * SLOTS_Y ? 12 : 4);
+            if(parent.orderObjects.length <= 8) {
+                offset -= (int)(SLOT_SIZE * (2f - 0.5f * (float)((parent.orderObjects.length - 1) / 2)));
+            }
+            return offset;
+        }
+    }
+
+    private static class GuiOrderInfoList extends GuiAwakeningScrollingList {
+        private static final int LARGE_SLOT_U = 104;
+        private static final int LARGE_SLOT_V = 224;
+        private static final int LARGE_SLOT_SIZE = 40;
+        private static final int LARGE_SLOT_ICON_OFFSET = 4;
+        private static final int LARGE_SLOT_OFFSET = 8;
+
+        private static final int ORDER_NAME_X = 48;
+        private static final int ORDER_NAME_Y = 3;
+        private static final int ORDER_INFO_X = 50;
+        private static final int ORDER_INFO_Y = 39;
+
+        private static final int SELECT_MESSAGE_OFFSET = 0;
+
+        private static final int LIST_WIDTH = 292;
+        private static final int LIST_HEIGHT = 155;
+        private static final int LIST_LEFT = 90;
+        private static final int LIST_TOP = 16;
+
+        private List<ITextComponent> lines = null;
+
+        public GuiOrderInfoList(GuiAwakeningTable parentGui) {
+            super(parentGui, LIST_LEFT, LIST_TOP, LIST_WIDTH, LIST_HEIGHT);
+            if(parent.selectedOrderPanelIndex != -1) {
+                List<String> stringList = parent.orderObjects[parent.selectedOrderPanelIndex].getInfo();
+                lines = new ArrayList<>();
+                for (String string : stringList) {
+                    if (string == null) {
+                        lines.add(null);
+                        continue;
+                    }
+
+                    ITextComponent chat = new TextComponentString(string);
+                    int maxTextLength = LIST_WIDTH - ORDER_INFO_X - 6 - 12;
+                    if (maxTextLength >= 0) {
+                        lines.addAll(GuiUtilRenderComponents.splitText(chat, maxTextLength, Minecraft.getMinecraft().fontRenderer, false, true));
+                    }
+                }
+            }
+            this.setHeaderInfo(true, getHeaderHeight());
+        }
+
+        @Override
+        protected int getHeaderHeight() {
+            if(lines == null) return 10;
+            int spellPanelHeight = 0; // TODO implement
+            int orderInfoHeight = ORDER_INFO_Y + (lines.size() * 10) + 12;
+            return Math.max(spellPanelHeight, orderInfoHeight);
+        }
+
+        @Override
+        protected void drawHeader(int entryRight, int relativeY, Tessellator tess) {
+            int x = LIST_LEFT + LARGE_SLOT_OFFSET;
+            int y = relativeY + getArbitraryYOffset() - parent.getGuiTop() + LARGE_SLOT_OFFSET;
+            Color whiteText = new Color(230, 230, 230);
+
+            if(parent.getSelectedOrder() != null) {
+                Minecraft.getMinecraft().getTextureManager().bindTexture(GuiAwakeningTable.background);
+                GuiAwakeningTable.drawModalRectWithCustomSizedTexture(parent.guiLeft + x, parent.guiTop + y, LARGE_SLOT_U, LARGE_SLOT_V, LARGE_SLOT_SIZE, LARGE_SLOT_SIZE, TEXTURE_SIZE, TEXTURE_SIZE);
+
+                // Draw order icon
+                joazlazer.mods.amc.client.render.RenderHelper.drawLargeOrderIcon(parent.guiLeft + x + LARGE_SLOT_ICON_OFFSET, parent.guiTop + y + LARGE_SLOT_ICON_OFFSET, parent.getSelectedOrder());
+
+                // Draw order name text
+                GlStateManager.pushMatrix(); {
+                    GlStateManager.scale(2.0f, 2.0f, 1.0f);
+                    parent.fontRenderer.drawStringWithShadow(parent.getSelectedOrder().getName(), (float)(parent.guiLeft + x + ORDER_NAME_X) / 2f, (float)(parent.guiTop + y + ORDER_NAME_Y) / 2f, new Color(254, 242, 76).getRGB());
+                    GlStateManager.scale(0.5f, 0.5f, 1.0f);
+                }
+                GlStateManager.popMatrix();
+
+                // Draw description text
+                Color grayText = new Color(130, 130, 130);
+                parent.drawString(parent.fontRenderer, GuiColor.ITALIC + parent.getSelectedOrder().getDescription(), parent.guiLeft + x + ORDER_NAME_X, parent.guiTop + y + ORDER_NAME_Y + 20, grayText.getRGB());
+
+                // Draw info text
+                Color lightGrayText = new Color(180, 180, 180);
+                int top = ORDER_INFO_Y + parent.guiTop + y;
+                boolean renderWhite = true;
+                for (ITextComponent line : lines) {
+                    if (line != null) {
+                        GlStateManager.enableBlend();
+                        GlStateManager.enableAlpha();
+                        Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(line.getFormattedText(), parent.guiLeft + x + ORDER_INFO_X, top, renderWhite ? whiteText.getRGB() : lightGrayText.getRGB());
+                        GlStateManager.disableAlpha();
+                        GlStateManager.disableBlend();
+                    } else renderWhite = !renderWhite;
+                    top += 10;
+                }
+            } else {
+                parent.drawString(parent.fontRenderer, GuiColor.ITALIC + I18n.format("container." + Reference.MOD_ID + ":awakening_table.select_message"), x + parent.guiLeft + SELECT_MESSAGE_OFFSET, y + parent.guiTop + SELECT_MESSAGE_OFFSET, whiteText.getRGB());
+            }
+        }
+
+        public void drawForeground(int mouseX, int mouseY) {
+            // TODO implement if needed
+        }
+
+        @Override
+        protected void clickHeader(int x, int y) {
+            // TODO implement
+        }
+
+        private int getArbitraryYOffset() {
+            int offset = -4;
+            if(getHeaderHeight() < LIST_HEIGHT) {
+                int difference = LIST_HEIGHT - getHeaderHeight();
+                offset -= difference / 2;
+                offset += 2;
+            }
+            return offset;
+        }
     }
 }

@@ -1,38 +1,36 @@
 package joazlazer.mods.amc.api.order;
 
-import joazlazer.mods.amc.api.spell.SpellBase;
-import joazlazer.mods.amc.util.Color;
-import net.minecraft.util.ResourceLocation;
+import java.awt.Color;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-public class OrderBase {
-    public ArrayList<Integer> specialtyIndexes;
+import joazlazer.mods.amc.common.reference.Reference;
+import joazlazer.mods.amc.utility.GuiColor;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.registries.IForgeRegistry;
+import net.minecraftforge.registries.IForgeRegistryEntry;
+import net.minecraftforge.registries.RegistryBuilder;
+
+public class OrderBase extends IForgeRegistryEntry.Impl<OrderBase> {
+    public static IForgeRegistry<OrderBase> registry;
     // The texture path for the icon.
     private ResourceLocation texture;
     private ResourceLocation largeTexture;
-    private ArrayList<String> infoText;
-    private ArrayList<String> tooltip;
-    private ArrayList<SpellBase> spells;
     // The unlocalized name for the order.
     private String unlocName;
     private String practicer;
-    private int id;
     private Color color;
 
     public OrderBase() {
-        infoText = new ArrayList<String>();
-        tooltip = new ArrayList<String>();
-        specialtyIndexes = new ArrayList<Integer>();
-        spells = new ArrayList<SpellBase>();
-        color = new Color();
-    }
-
-    public ArrayList<SpellBase> getSpells() {
-        return spells;
-    }
-
-    public void setSpells(ArrayList<SpellBase> spells) {
-        this.spells = spells;
+        color = Color.LIGHT_GRAY;
     }
 
     public ResourceLocation getLargeTexture() {
@@ -51,15 +49,6 @@ public class OrderBase {
         this.color = color;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public OrderBase setId(int id) {
-        this.id = id;
-        return this;
-    }
-
     public String getPracticer() {
         return practicer;
     }
@@ -75,24 +64,6 @@ public class OrderBase {
     @Override
     public String toString() {
         return this.getUnlocName();
-    }
-
-    public ArrayList<String> getInfoText() {
-        return infoText;
-    }
-
-    public OrderBase setInfoText(ArrayList<String> infoText) {
-        this.infoText = infoText;
-        return this;
-    }
-
-    public ArrayList<String> getTooltip() {
-        return tooltip;
-    }
-
-    public OrderBase setTooltip(ArrayList<String> tooltip) {
-        this.tooltip = tooltip;
-        return this;
     }
 
     public String getUnlocName() {
@@ -117,14 +88,48 @@ public class OrderBase {
         return this;
     }
 
-    public void addSpecialties() {
-        // Iterate through the different spells.
-        for (int i = 0; i < spells.size(); i++) {
-            // If the current spell is a specialty,
-            if (spells.get(i).isSpecialty()) {
-                // Then add its index to the specialties array.
-                specialtyIndexes.add(i);
-            }
+    @Mod.EventBusSubscriber(modid = Reference.MOD_ID)
+    public static class RegistrationHandler {
+        @SubscribeEvent
+        public static void registerRegistries(RegistryEvent.NewRegistry event) {
+            RegistryBuilder rb = new RegistryBuilder<OrderBase>();
+            rb.setType(OrderBase.class);
+            rb.setName(new ResourceLocation(Reference.MOD_ID, "orders"));
+            registry = rb.create();
         }
+    }
+
+    @SideOnly(Side.CLIENT)
+    public List<String> getTooltip() {
+        ArrayList<String> tt = new ArrayList<>();
+        tt.add(GuiColor.YELLOW + I18n.format("order." + this.getUnlocName() + ".name"));
+        tt.add(GuiColor.ITALIC + I18n.format("order." + this.getUnlocName() + ".desc"));
+        return tt;
+    }
+
+    public String getName() {
+        return I18n.format("order." + this.getUnlocName() + ".name");
+    }
+
+    public String getDescription() {
+         return I18n.format("order." + this.getUnlocName() + ".desc");
+    }
+
+    public List<String> getInfo() {
+        List<String> lines = new ArrayList<>();
+        String baseInfo = I18n.format("order." + this.getUnlocName() + ".info");
+        Pattern paragraphParsing = Pattern.compile("(?:^|\\$%\\$)([\\S\\s]+?)(?=$|\\$%\\$)");
+        Matcher paragraphMatcher = paragraphParsing.matcher(baseInfo);
+        while(paragraphMatcher.find()) {
+            lines.add(paragraphMatcher.group(1));
+        }
+
+        // Add null lines between paragraphs
+        int numOfLines = lines.size();
+        for(int i = 0; i < numOfLines - 1; ++i) {
+            int j = 2 * i + 1;
+            lines.add(j, null);
+        }
+        return lines;
     }
 }

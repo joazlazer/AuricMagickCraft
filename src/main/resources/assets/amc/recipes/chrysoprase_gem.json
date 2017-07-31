@@ -1,0 +1,29 @@
+{
+  "result": {
+    "item": "amc:chrysoprase_gem"
+  },
+  "pattern": [
+    "gbg",
+    "plp",
+    "gbg"
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "g": {
+      "type": "forge:ore_dict",
+      "ore": "dyeGreen"
+    },
+    "p": {
+      "type": "forge:ore_dict",
+      "ore": "paneGlass"
+    },
+    "b": {
+      "type": "forge:ore_dict",
+      "ore": "dyeBlack"
+    },
+    "l": {
+      "item": "minecraft:dye",
+      "data": 4
+    }
+  }
+}

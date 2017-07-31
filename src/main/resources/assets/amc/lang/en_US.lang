@@ -1,12 +1,30 @@
-container.amc:orders=Orders:
-container.amc:spells=Spells:
-container.amc:awaken=Awaken
+# Creative Tabs
+itemGroup.amc=Auric Magick Craft
 
-order.alchemia.name=Order Alchemia
+# Blocks
+tile.amc:awakening_table.name=Awakening Table
+
+# Items
+item.amc:chrysoprase_gem.name=Polished Chrysoprase
+
+#Containers
+container.amc:awakening_table.select_message=Select an order from the left panel to view details
+container.amc:awakening_table.awaken=Awaken
+
+# Order Names
+order.alchimia.name=Order Alchimia
 order.arcana.name=Order Arcana
+order.iracundia.name=Order Iracundia
+order.praecanta.name=Order Praecanta
+order.praesidia.name=Order Praesidia
 
-tile.amc:awakeningTable.name=Awakening Table
+# Order Descriptions
+order.alchimia.desc=The way of the alchemists
+order.arcana.desc=The way of the elementalists
+order.iracundia.desc=The way of the warlocks
+order.praecanta.desc=The way of the sorcerers
+order.praesidia.desc=The way of the warders
 
-tab.amc=Auric Magick Craft
-
-item.amc:awakeningCrystal.name=Awakening Crystal
+# Order Info Texts
+order.alchimia.info=The alchemist uses their magical powers to alter the very structure of the matter around them. Starting out with basic and mundane transmutations that exist primarily for utility, those who master the order are capable of much more, such as the ability to create life out of unliving matter.$%%$The Order Alchimia begins with additional points towards basic transmutation, and has the sub-tree "Alchemy Mastery" open for unlock.
+order.arcana.info=The elementalist uses their innate powers to manipulate the primal elements around them: water, earth, fire, air, light, and dark. Able to cast spells ranging from small blasts to devastating storms, those who follow the order excell in magic-based combat and utility.$%%$The Order Arcana begins with additional skill points towards each of the primal combat spells, and has the sub-tree "Primal Mastery" open for unlock.

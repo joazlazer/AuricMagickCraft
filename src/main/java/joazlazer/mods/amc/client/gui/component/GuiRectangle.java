@@ -1,7 +1,6 @@
 package joazlazer.mods.amc.client.gui.component;
 
 import joazlazer.mods.amc.client.gui.IGuiAccess;
-import net.minecraft.client.gui.GuiScreen;
 
 import java.util.Arrays;
 import java.util.List;
@@ -24,7 +23,18 @@ public class GuiRectangle {
         gui.renderRectangle(gui.getGuiLeft() + x, gui.getGuiTop() + y, u, v, w, h);
     }
 
+    public void drawAt(IGuiAccess gui, int x, int y, int u, int v) {
+        gui.renderRectangle(this.x + x, this.y + y, u, v, w, h);
+    }
+
     public boolean inRect(IGuiAccess gui, int mouseX, int mouseY) {
+        mouseX -= gui.getGuiLeft();
+        mouseY -= gui.getGuiTop();
+
+        return x <= mouseX && mouseX <= x + w && y <= mouseY && mouseY <= y + h;
+    }
+
+    public static boolean inRect(IGuiAccess gui, int mouseX, int mouseY, int x, int y, int w, int h) {
         mouseX -= gui.getGuiLeft();
         mouseY -= gui.getGuiTop();
 

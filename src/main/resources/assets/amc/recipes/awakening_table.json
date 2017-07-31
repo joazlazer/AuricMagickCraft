@@ -1,0 +1,31 @@
+{
+  "result": {
+    "item": "amc:awakening_table"
+  },
+  "pattern": [
+    " p ",
+    "gsg",
+    "wbw"
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "g": {
+      "type": "forge:ore_dict",
+      "ore": "nuggetGold"
+    },
+    "p": {
+      "item": "amc:chrysoprase_gem"
+    },
+    "s": {
+      "type": "forge:ore_dict",
+      "ore": "stone"
+    },
+    "b": {
+      "item": "minecraft:bookshelf"
+    },
+    "w": {
+      "type": "forge:ore_dict",
+      "ore": "slabWood"
+    }
+  }
+}
