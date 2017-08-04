@@ -1,5 +1,9 @@
 package joazlazer.mods.amc.common.tileentity;
 
+import joazlazer.mods.amc.api.order.OrderBase;
+import joazlazer.mods.amc.client.gui.GuiAwakeningScreen;
+import joazlazer.mods.amc.common.handlers.NetworkHandler;
+import joazlazer.mods.amc.common.network.MessageAwakeningControl;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -23,26 +27,30 @@ public class TileEntityAwakeningTable extends TileEntity implements ITickable, I
     public int tickCount;
     public float pageFlip;
     public float pageFlipPrev;
-    public float flipT;
-    public float flipA;
+    private float flipT;
+    private float flipA;
     public float bookSpread;
     public float bookSpreadPrev;
     public float bookRotation;
     public float bookRotationPrev;
-    public float tRot;
+    private float tRot;
     public int awakeningTicks = -1;
     private static final Random rand = new Random();
+    public OrderBase selectedOrder = null;
+
+    public void awaken() {
+        this.awakeningTicks = 0;
+        NetworkHandler.INSTANCE.sendToServer(new MessageAwakeningControl(MessageAwakeningControl.ControlType.START));
+    }
 
     /**
      * Like the old updateEntity(), except more generic.
      */
     public void update()
     {
-        if(awakeningTicks >= AWAKENING_TICKS_MAX) {
+        if(awakeningTicks >= AWAKENING_TICKS_MAX && this.world.isRemote) {
             awakeningTicks = -1;
-            Minecraft.getMinecraft().displayGuiScreen(null);
-            // send packet to awaken to server
-            // return to hearth, close gui, do stuff
+            NetworkHandler.INSTANCE.sendToServer(new MessageAwakeningControl(MessageAwakeningControl.ControlType.END, selectedOrder));
         }
         if(awakeningTicks != -1) {
             ++awakeningTicks;
@@ -73,63 +81,52 @@ public class TileEntityAwakeningTable extends TileEntity implements ITickable, I
         this.bookRotationPrev = this.bookRotation;
         EntityPlayer entityplayer = this.world.getClosestPlayer((double)((float)this.pos.getX() + 0.5F), (double)((float)this.pos.getY() + 0.5F), (double)((float)this.pos.getZ() + 0.5F), PLAYER_DISTANCE, false);
 
-        if (entityplayer != null)
-        {
+        if (entityplayer != null) {
             double d0 = entityplayer.posX - (double)((float)this.pos.getX() + 0.5F);
             double d1 = entityplayer.posZ - (double)((float)this.pos.getZ() + 0.5F);
             this.tRot = (float) MathHelper.atan2(d1, d0);
             this.bookSpread += 0.1F;
 
-            if (this.bookSpread < 0.5F || rand.nextInt(40) == 0)
-            {
+            if (this.bookSpread < 0.5F || rand.nextInt(40) == 0) {
                 float f1 = this.flipT;
 
-                while (true)
-                {
+                while (true) {
                     this.flipT += (float)(rand.nextInt(4) - rand.nextInt(4));
 
-                    if (f1 != this.flipT)
-                    {
+                    if (f1 != this.flipT) {
                         break;
                     }
                 }
             }
         }
-        else
-        {
+        else {
             this.tRot += 0.02F;
             this.bookSpread -= 0.1F;
         }
 
-        while (this.bookRotation >= (float)Math.PI)
-        {
+        while (this.bookRotation >= (float)Math.PI) {
             this.bookRotation -= ((float)Math.PI * 2F);
         }
 
-        while (this.bookRotation < -(float)Math.PI)
-        {
+        while (this.bookRotation < -(float)Math.PI) {
             this.bookRotation += ((float)Math.PI * 2F);
         }
 
-        while (this.tRot >= (float)Math.PI)
-        {
+        while (this.tRot >= (float)Math.PI) {
             this.tRot -= ((float)Math.PI * 2F);
         }
 
-        while (this.tRot < -(float)Math.PI)
-        {
+        while (this.tRot < -(float)Math.PI) {
             this.tRot += ((float)Math.PI * 2F);
         }
 
         float f2;
 
-        for (f2 = this.tRot - this.bookRotation; f2 >= (float)Math.PI; f2 -= ((float)Math.PI * 2F))
-        {
+        for (f2 = this.tRot - this.bookRotation; f2 >= (float)Math.PI; f2 -= ((float)Math.PI * 2F)) {
             ;
         }
 
-        while (f2 < -(float)Math.PI)
-        {
+        while (f2 < -(float)Math.PI) {
             f2 += ((float)Math.PI * 2F);
         }
 

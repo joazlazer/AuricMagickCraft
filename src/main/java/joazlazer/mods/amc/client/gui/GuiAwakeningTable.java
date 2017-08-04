@@ -3,9 +3,11 @@ package joazlazer.mods.amc.client.gui;
 import joazlazer.mods.amc.api.order.OrderBase;
 import joazlazer.mods.amc.client.gui.component.GuiRectangle;
 import joazlazer.mods.amc.common.container.ContainerAwakeningTable;
+import joazlazer.mods.amc.common.handlers.NetworkHandler;
+import joazlazer.mods.amc.common.network.MessageAwakeningControl;
 import joazlazer.mods.amc.common.reference.Reference;
 import joazlazer.mods.amc.common.tileentity.TileEntityAwakeningTable;
-import joazlazer.mods.amc.utility.GuiColor;
+import joazlazer.mods.amc.common.utility.GuiColor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiUtilRenderComponents;
@@ -15,21 +17,20 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
 public class GuiAwakeningTable extends GuiContainerAMC {
-    public static final int WIDTH = 398;
-    public static final int HEIGHT = 222;
-    public static final int TEXTURE_SIZE = 512;
+    private static final int WIDTH = 398;
+    private static final int HEIGHT = 222;
+    static final int TEXTURE_SIZE = 512;
 
-    public static final int AWAKEN_BUTTON_X = 87;
-    public static final int AWAKEN_BUTTON_Y = 195;
-    public static final int AWAKEN_BUTTON_W = 98;
-    public static final int AWAKEN_BUTTON_H = 14;
+    private static final int AWAKEN_BUTTON_X = 87;
+    private static final int AWAKEN_BUTTON_Y = 195;
+    private static final int AWAKEN_BUTTON_W = 98;
+    private static final int AWAKEN_BUTTON_H = 14;
 
     private final TileEntityAwakeningTable te;
     private static final ResourceLocation background = new ResourceLocation(Reference.MOD_ID, "textures/gui/awakening_table.png");
@@ -37,7 +38,8 @@ public class GuiAwakeningTable extends GuiContainerAMC {
     private GuiOrderInfoList orderInfoList;
     private int selectedOrderPanelIndex = -1;
     private OrderBase[] orderObjects;
-    GuiButton awakenButton;
+    public boolean canAwaken = false;
+    private GuiButton awakenButton;
 
     public GuiAwakeningTable(TileEntityAwakeningTable tileEntity, ContainerAwakeningTable container) {
         super(container, WIDTH, HEIGHT);
@@ -47,6 +49,7 @@ public class GuiAwakeningTable extends GuiContainerAMC {
         List<OrderBase> orders = OrderBase.registry.getValues();
         orderObjects = new OrderBase[orders.size()];
         orders.toArray(orderObjects);
+        NetworkHandler.INSTANCE.sendToServer(new MessageAwakeningControl(MessageAwakeningControl.ControlType.CAN_AWAKEN));
     }
 
     @Override
@@ -62,9 +65,7 @@ public class GuiAwakeningTable extends GuiContainerAMC {
     @Override
     public void updateScreen() {
         super.updateScreen();
-        if(selectedOrderPanelIndex == -1) {
-            awakenButton.enabled = false;
-        } else awakenButton.enabled = true;
+        awakenButton.enabled = selectedOrderPanelIndex != -1 && canAwaken;
     }
 
     @Override
@@ -92,9 +93,10 @@ public class GuiAwakeningTable extends GuiContainerAMC {
 
     private void selectOrder() {
         orderInfoList = new GuiOrderInfoList(this);
+        te.selectedOrder = orderObjects[selectedOrderPanelIndex];
     }
 
-    public OrderBase getSelectedOrder() {
+    OrderBase getSelectedOrder() {
         if(selectedOrderPanelIndex == -1) return null;
         else return orderObjects[selectedOrderPanelIndex];
     }
@@ -102,15 +104,15 @@ public class GuiAwakeningTable extends GuiContainerAMC {
     @Override
     protected void actionPerformed(net.minecraft.client.gui.GuiButton button) {
         if(button.id == 0) {
-            te.awakeningTicks = 0;
+            te.awaken();
             Minecraft.getMinecraft().displayGuiScreen(new GuiAwakeningScreen(te));
         }
     }
 
     abstract static class GuiAwakeningScrollingList extends GuiScrollingList {
-        protected GuiAwakeningTable parent;
+        GuiAwakeningTable parent;
 
-        public GuiAwakeningScrollingList(GuiAwakeningTable parentGui, int left, int top, int width, int height) {
+        GuiAwakeningScrollingList(GuiAwakeningTable parentGui, int left, int top, int width, int height) {
             super(Minecraft.getMinecraft(), width, height,
                     parentGui.getGuiTop() + top, parentGui.getGuiTop() + top + height,parentGui.getGuiLeft() + left,
                     1, parentGui.width, parentGui.height);
@@ -149,14 +151,13 @@ public class GuiAwakeningTable extends GuiContainerAMC {
 
         private int tooltipIndex = -1;
 
-        public GuiOrderList(GuiAwakeningTable parentGui) {
+        GuiOrderList(GuiAwakeningTable parentGui) {
             super(parentGui, LIST_LEFT, LIST_TOP, LIST_WIDTH, LIST_HEIGHT);
         }
 
         @Override
         protected int getHeaderHeight() {
-            int hHeight = ((parent.orderObjects.length - 1) / 2 + 1) * SLOT_SIZE;
-            return hHeight;
+            return (((parent.orderObjects.length - 1) / 2) + 1) * SLOT_SIZE;
         }
 
         @Override
@@ -215,7 +216,7 @@ public class GuiAwakeningTable extends GuiContainerAMC {
             }
         }
 
-        public void drawForeground(int mouseX, int mouseY) {
+        void drawForeground(int mouseX, int mouseY) {
             if(tooltipIndex != -1) {
                 parent.drawHoverString(parent.orderObjects[tooltipIndex].getTooltip(), mouseX, mouseY);
             }
@@ -263,7 +264,7 @@ public class GuiAwakeningTable extends GuiContainerAMC {
 
         private List<ITextComponent> lines = null;
 
-        public GuiOrderInfoList(GuiAwakeningTable parentGui) {
+        GuiOrderInfoList(GuiAwakeningTable parentGui) {
             super(parentGui, LIST_LEFT, LIST_TOP, LIST_WIDTH, LIST_HEIGHT);
             if(parent.selectedOrderPanelIndex != -1) {
                 List<String> stringList = parent.orderObjects[parent.selectedOrderPanelIndex].getInfo();
@@ -276,9 +277,7 @@ public class GuiAwakeningTable extends GuiContainerAMC {
 
                     ITextComponent chat = new TextComponentString(string);
                     int maxTextLength = LIST_WIDTH - ORDER_INFO_X - 6 - 12;
-                    if (maxTextLength >= 0) {
-                        lines.addAll(GuiUtilRenderComponents.splitText(chat, maxTextLength, Minecraft.getMinecraft().fontRenderer, false, true));
-                    }
+                    lines.addAll(GuiUtilRenderComponents.splitText(chat, maxTextLength, Minecraft.getMinecraft().fontRenderer, false, true));
                 }
             }
             this.setHeaderInfo(true, getHeaderHeight());
@@ -336,7 +335,7 @@ public class GuiAwakeningTable extends GuiContainerAMC {
             }
         }
 
-        public void drawForeground(int mouseX, int mouseY) {
+        void drawForeground(int mouseX, int mouseY) {
             // TODO implement if needed
         }
 

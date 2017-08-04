@@ -1,4 +1,4 @@
-package joazlazer.mods.amc.utility;
+package joazlazer.mods.amc.common.utility;
 
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
@@ -119,7 +119,7 @@ public class MathHelper {
     }
 
     /**
-     * Convenience pass-through to net.minecraft.util.math.MathHelper.clamp(in, min, max)
+     * Convenience pass-through to net.minecraft.utility.math.MathHelper.clamp(in, min, max)
      * @param in
      * @param min
      * @param max

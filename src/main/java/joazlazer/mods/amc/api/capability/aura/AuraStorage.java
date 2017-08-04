@@ -1,6 +1,5 @@
-package joazlazer.mods.amc.api.capability.storage;
+package joazlazer.mods.amc.api.capability.aura;
 
-import joazlazer.mods.amc.api.capability.IAuraHandler;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;

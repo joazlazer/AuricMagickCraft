@@ -7,7 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import joazlazer.mods.amc.common.reference.Reference;
-import joazlazer.mods.amc.utility.GuiColor;
+import joazlazer.mods.amc.common.utility.GuiColor;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;

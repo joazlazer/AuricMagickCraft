@@ -1,6 +1,5 @@
-package joazlazer.mods.amc.api.capability.storage;
+package joazlazer.mods.amc.api.capability.spell;
 
-import joazlazer.mods.amc.api.capability.ISpellCaster;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;

@@ -8,11 +8,14 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import org.apache.logging.log4j.Logger;
 
 @Mod(modid = AuricMagickCraft.MODID, version = AuricMagickCraft.VERSION, useMetadata = true)
 public class AuricMagickCraft {
     public static final String MODID = Reference.MOD_ID;
     public static final String VERSION = Reference.VERSION;
+
+    public static Logger logger;
 
     @Mod.Instance
     public static AuricMagickCraft instance;
@@ -22,6 +25,7 @@ public class AuricMagickCraft {
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
+        logger = event.getModLog();
         proxy.preInit(event);
     }
 

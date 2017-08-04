@@ -1,8 +1,8 @@
 package joazlazer.mods.amc.client.gui;
 
 import joazlazer.mods.amc.common.tileentity.TileEntityAwakeningTable;
-import joazlazer.mods.amc.utility.EntityUtils;
-import joazlazer.mods.amc.utility.MathHelper;
+import joazlazer.mods.amc.common.utility.EntityUtils;
+import joazlazer.mods.amc.common.utility.MathHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
@@ -100,5 +100,11 @@ public class GuiAwakeningScreen extends GuiScreen {
 
         // Apply new yaw and pitch to the player's camera
         EntityUtils.setRotation(Minecraft.getMinecraft().player, newYaw, newPitch);
+    }
+
+
+    public void finalizeAwakening() {
+        // TODO Begin fadeout
+        Minecraft.getMinecraft().displayGuiScreen(null);
     }
 }

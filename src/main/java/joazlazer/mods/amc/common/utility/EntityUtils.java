@@ -1,4 +1,4 @@
-package joazlazer.mods.amc.utility;
+package joazlazer.mods.amc.common.utility;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;

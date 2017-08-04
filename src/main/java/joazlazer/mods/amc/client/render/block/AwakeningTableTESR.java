@@ -120,7 +120,7 @@ public class AwakeningTableTESR extends TileEntitySpecialRenderer<TileEntityAwak
                 final float completed = 0.75f;
 
                 // Interpolate between 0 and the max rise amount
-                rise = joazlazer.mods.amc.utility.MathHelper.limitedSinInterp(0.0f, riseAmount, completed, bookSpreadInterp);
+                rise = joazlazer.mods.amc.common.utility.MathHelper.limitedSinInterp(0.0f, riseAmount, completed, bookSpreadInterp);
 
                 // Translate to the center of the block and .9 points higher
                 GlStateManager.translate(.5, .9 + rise, .5);
@@ -162,7 +162,7 @@ public class AwakeningTableTESR extends TileEntitySpecialRenderer<TileEntityAwak
                 final float completed = 0.75f;
 
                 // Interpolate between 0 and the max angle
-                angle = joazlazer.mods.amc.utility.MathHelper.limitedSinInterp(0.0f, angleMax, completed, bookSpreadInterp);
+                angle = joazlazer.mods.amc.common.utility.MathHelper.limitedSinInterp(0.0f, angleMax, completed, bookSpreadInterp);
 
                 // Rotate the rendering origin according to the angle
                 GlStateManager.rotate(angle, -1.0f, 0.0f, 0.0f);

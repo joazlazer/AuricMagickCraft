@@ -1,4 +1,4 @@
-package joazlazer.mods.amc.utility;
+package joazlazer.mods.amc.common.utility;
 
 public enum GuiColor {
     BLACK(0),
