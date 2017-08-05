@@ -1,5 +1,6 @@
 package joazlazer.mods.amc.client;
 
+import joazlazer.mods.amc.client.gui.GuiAmcIngame;
 import joazlazer.mods.amc.common.CommonProxy;
 import joazlazer.mods.amc.common.handlers.KeyHandler;
 import net.minecraftforge.common.MinecraftForge;
@@ -12,6 +13,7 @@ public class ClientProxy extends CommonProxy{
     public void preInit(FMLPreInitializationEvent e) {
         super.preInit(e);
         MinecraftForge.EVENT_BUS.register(new KeyHandler());
+        MinecraftForge.EVENT_BUS.register(new GuiAmcIngame());
     }
 
     @Override

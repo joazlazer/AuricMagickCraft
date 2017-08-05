@@ -65,7 +65,8 @@ public class MathHelper {
             float delta = yawB - yawA;
 
             // return normal lerp
-            return yawA + (delta * mu);
+            float result = yawA + (delta * mu);
+            return result;
         } else {
             // wrapping needed
             float delta = 0f;
@@ -78,7 +79,9 @@ public class MathHelper {
             }
 
             // return normal lerp, except correct for wrapping
-            return wrapScale(yawA + (delta * mu), -180f, 180f);
+            float result = yawA + (delta * mu);
+            float wrapped = wrapScale(result, -180f, 180f);
+            return wrapped;
         }
     }
 

@@ -4,11 +4,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class EntityUtils {
-    @SideOnly(Side.CLIENT)
     public static void lookAt(EntityPlayer player, Vec3d lookat) {
         player.setLocationAndAngles(player.posX, player.posY, player.posZ, getYawTowards(player, lookat), getPitchTowards(player, lookat));
     }

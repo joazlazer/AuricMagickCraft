@@ -49,10 +49,11 @@ public class TileEntityAwakeningTable extends TileEntity implements ITickable, I
     public void update()
     {
         if(awakeningTicks >= AWAKENING_TICKS_MAX && this.world.isRemote) {
+            if(Minecraft.getMinecraft().currentScreen instanceof GuiAwakeningScreen) ((GuiAwakeningScreen)Minecraft.getMinecraft().currentScreen).renderWhiteScreen();
             awakeningTicks = -1;
             NetworkHandler.INSTANCE.sendToServer(new MessageAwakeningControl(MessageAwakeningControl.ControlType.END, selectedOrder));
         }
-        if(awakeningTicks != -1) {
+        if(awakeningTicks != -1 && this.world.isRemote) {
             ++awakeningTicks;
             // Should particles be spawned on this tick and are we in the first 2/3 of the awakening ritual?
             if(awakeningTicks % PARTICLE_SPAWN_FREQUENCY == 0 && awakeningTicks <= (AWAKENING_TICKS_MAX - (AWAKENING_TICKS_MAX / 3))) {
@@ -123,7 +124,6 @@ public class TileEntityAwakeningTable extends TileEntity implements ITickable, I
         float f2;
 
         for (f2 = this.tRot - this.bookRotation; f2 >= (float)Math.PI; f2 -= ((float)Math.PI * 2F)) {
-            ;
         }
 
         while (f2 < -(float)Math.PI) {

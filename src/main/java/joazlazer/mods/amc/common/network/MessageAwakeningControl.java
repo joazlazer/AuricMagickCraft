@@ -33,8 +33,9 @@ public class MessageAwakeningControl implements IMessage {
         this.type = type;
         this.orderBase = order;
     }
-    public MessageAwakeningControl(ControlType type, boolean bool) {
+    public MessageAwakeningControl(ControlType type, OrderBase order, boolean bool) {
         this.type = type;
+        this.orderBase = order;
         this.canAwaken = bool;
     }
 
@@ -55,6 +56,11 @@ public class MessageAwakeningControl implements IMessage {
             this.orderBase = order;
         } else if(type == ControlType.REPLY) {
             this.canAwaken = buf.readBoolean();
+            String domain = ByteBufUtils.readUTF8String(buf);
+            String path = ByteBufUtils.readUTF8String(buf);
+            ResourceLocation resourceLocation = new ResourceLocation(domain, path);
+            OrderBase order = (OrderBase.registry.containsKey(resourceLocation)) ? OrderBase.registry.getValue(resourceLocation) : null;
+            this.orderBase = order;
         }
     }
 
@@ -66,6 +72,8 @@ public class MessageAwakeningControl implements IMessage {
             ByteBufUtils.writeUTF8String(buf, orderBase.getRegistryName().getResourcePath());
         } else if(type == ControlType.REPLY) {
             buf.writeBoolean(this.canAwaken);
+            ByteBufUtils.writeUTF8String(buf, (orderBase != null) ? orderBase.getRegistryName().getResourceDomain() : "null");
+            ByteBufUtils.writeUTF8String(buf, (orderBase != null) ? orderBase.getRegistryName().getResourcePath() : "null");
         }
     }
 
@@ -82,6 +90,7 @@ public class MessageAwakeningControl implements IMessage {
                 } else if(message.type == ControlType.REPLY) {
                     if(currentScreen instanceof GuiAwakeningTable && currentScreen != null) {
                         ((GuiAwakeningTable)currentScreen).canAwaken = message.canAwaken;
+                        ((GuiAwakeningTable)currentScreen).currentPlayerOrder = message.orderBase;
                     }
                     return null;
                 }
@@ -92,8 +101,12 @@ public class MessageAwakeningControl implements IMessage {
                 final IAmcProgressionHandler amcProgressionHandler = player.getCapability(CapabilityAmcProgressionHandler.AMC_PROGRESSION_HANDLER, null);
                 if(message.type == ControlType.CAN_AWAKEN) {
                     boolean canAwaken = false;
-                    if(amcProgressionHandler != null && !amcProgressionHandler.getIsAwakened()) canAwaken = true;
-                    return new MessageAwakeningControl(ControlType.REPLY, canAwaken);
+                    OrderBase order = null;
+                    if(amcProgressionHandler != null) {
+                        canAwaken = !amcProgressionHandler.getIsAwakened();
+                        order = amcProgressionHandler.getOrder();
+                    }
+                    return new MessageAwakeningControl(ControlType.REPLY, order, canAwaken);
                 } else if(message.type == ControlType.START) {
                     // TODO I want to set player invulnerable: how to prevent exploitation?
                 } else if(message.type == ControlType.END) {

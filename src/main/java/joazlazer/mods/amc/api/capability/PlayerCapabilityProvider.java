@@ -22,9 +22,7 @@ public class PlayerCapabilityProvider implements ICapabilityProvider, INBTSerial
 
     @Override
     public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable EnumFacing facing) {
-        if(capability == CapabilityAmcProgressionHandler.AMC_PROGRESSION_HANDLER) {
-            return true;
-        } else return false;
+        return capability == CapabilityAmcProgressionHandler.AMC_PROGRESSION_HANDLER;
     }
 
     @Nullable
@@ -39,7 +37,6 @@ public class PlayerCapabilityProvider implements ICapabilityProvider, INBTSerial
     public NBTTagCompound serializeNBT() {
         NBTTagCompound nbt = new NBTTagCompound();
         nbt.setTag("amcProgressionHandler", amcProgressionHandler.serializeNBT());
-        AuricMagickCraft.logger.info(String.format("[PlayerCapabilityProvider.serializeNBT(...)] Serialized player capability bundle: %s", amcProgressionHandler.toString()));
         return nbt;
     }
 
@@ -47,6 +44,5 @@ public class PlayerCapabilityProvider implements ICapabilityProvider, INBTSerial
     public void deserializeNBT(NBTTagCompound nbt) {
         NBTBase amcProgressionHandlerNBT = nbt.getTag("amcProgressionHandler");
         amcProgressionHandler.deserializeNBT(amcProgressionHandlerNBT);
-        AuricMagickCraft.logger.info(String.format("[PlayerCapabilityProvider.deserializeNBT(...)] Deserialized player capability bundle: %s", amcProgressionHandler.toString()));
     }
 }

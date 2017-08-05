@@ -13,8 +13,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 import net.minecraftforge.registries.RegistryBuilder;
@@ -99,7 +97,6 @@ public class OrderBase extends IForgeRegistryEntry.Impl<OrderBase> {
         }
     }
 
-    @SideOnly(Side.CLIENT)
     public List<String> getTooltip() {
         ArrayList<String> tt = new ArrayList<>();
         tt.add(GuiColor.YELLOW + I18n.format("order." + this.getUnlocName() + ".name"));

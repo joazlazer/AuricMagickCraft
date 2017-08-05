@@ -38,6 +38,7 @@ public class GuiAwakeningTable extends GuiContainerAMC {
     private GuiOrderInfoList orderInfoList;
     private int selectedOrderPanelIndex = -1;
     private OrderBase[] orderObjects;
+    public OrderBase currentPlayerOrder = null;
     public boolean canAwaken = false;
     private GuiButton awakenButton;
 
@@ -143,6 +144,8 @@ public class GuiAwakeningTable extends GuiContainerAMC {
         private static final int SLOT_HOVERED_SPRITE_V = 224;
         private static final int SLOT_CLICKED_SPRITE_U = 40;
         private static final int SLOT_CLICKED_SPRITE_V = 224;
+        private static final int SLOT_GOLD_U_OFFSET = 0;
+        private static final int SLOT_GOLD_V_OFFSET = 20;
 
         private static final int LIST_WIDTH = 46;
         private static final int LIST_HEIGHT = 120;
@@ -207,7 +210,13 @@ public class GuiAwakeningTable extends GuiContainerAMC {
                     texV = SLOT_CLICKED_SPRITE_V;
                 }
 
+                // If the current order is the one that is selected, add an offset
+                boolean isCurrentOrder = (parent.currentPlayerOrder == parent.orderObjects[i]);
+                texU += (isCurrentOrder) ? SLOT_GOLD_U_OFFSET : 0;
+                texV += (isCurrentOrder) ? SLOT_GOLD_V_OFFSET : 0;
+
                 // Finally, draw the slot using the selected texture
+                GlStateManager.disableLighting();
                 Minecraft.getMinecraft().getTextureManager().bindTexture(GuiAwakeningTable.background);
                 GuiAwakeningTable.drawModalRectWithCustomSizedTexture(parent.guiLeft + x, parent.guiTop + y, texU, texV, SLOT_SIZE, SLOT_SIZE, TEXTURE_SIZE, TEXTURE_SIZE);
 
@@ -249,11 +258,14 @@ public class GuiAwakeningTable extends GuiContainerAMC {
         private static final int LARGE_SLOT_SIZE = 40;
         private static final int LARGE_SLOT_ICON_OFFSET = 4;
         private static final int LARGE_SLOT_OFFSET = 8;
+        private static final int LARGE_GOLD_SLOT_U_OFFSET = 40;
+        private static final int LARGE_GOLD_SLOT_V_OFFSET = 0;
 
         private static final int ORDER_NAME_X = 48;
-        private static final int ORDER_NAME_Y = 3;
+        private static final int ORDER_NAME_Y = 0;
         private static final int ORDER_INFO_X = 50;
         private static final int ORDER_INFO_Y = 39;
+        private static final int ORDER_CURRENT_Y_OFFSET = 12;
 
         private static final int SELECT_MESSAGE_OFFSET = 0;
 
@@ -263,10 +275,12 @@ public class GuiAwakeningTable extends GuiContainerAMC {
         private static final int LIST_TOP = 16;
 
         private List<ITextComponent> lines = null;
+        private int orderInfoY = ORDER_INFO_Y;
 
         GuiOrderInfoList(GuiAwakeningTable parentGui) {
             super(parentGui, LIST_LEFT, LIST_TOP, LIST_WIDTH, LIST_HEIGHT);
             if(parent.selectedOrderPanelIndex != -1) {
+                if(parent.currentPlayerOrder == parent.getSelectedOrder()) orderInfoY += ORDER_CURRENT_Y_OFFSET;
                 List<String> stringList = parent.orderObjects[parent.selectedOrderPanelIndex].getInfo();
                 lines = new ArrayList<>();
                 for (String string : stringList) {
@@ -287,7 +301,7 @@ public class GuiAwakeningTable extends GuiContainerAMC {
         protected int getHeaderHeight() {
             if(lines == null) return 10;
             int spellPanelHeight = 0; // TODO implement
-            int orderInfoHeight = ORDER_INFO_Y + (lines.size() * 10) + 12;
+            int orderInfoHeight = orderInfoY + (lines.size() * 10) + 12;
             return Math.max(spellPanelHeight, orderInfoHeight);
         }
 
@@ -295,42 +309,56 @@ public class GuiAwakeningTable extends GuiContainerAMC {
         protected void drawHeader(int entryRight, int relativeY, Tessellator tess) {
             int x = LIST_LEFT + LARGE_SLOT_OFFSET;
             int y = relativeY + getArbitraryYOffset() - parent.getGuiTop() + LARGE_SLOT_OFFSET;
+            Color yellowText = new Color(254, 242, 76);
             Color whiteText = new Color(230, 230, 230);
+            Color lightGrayText = new Color(180, 180, 180);
+            Color grayText = new Color(130, 130, 130);
 
             if(parent.getSelectedOrder() != null) {
                 Minecraft.getMinecraft().getTextureManager().bindTexture(GuiAwakeningTable.background);
-                GuiAwakeningTable.drawModalRectWithCustomSizedTexture(parent.guiLeft + x, parent.guiTop + y, LARGE_SLOT_U, LARGE_SLOT_V, LARGE_SLOT_SIZE, LARGE_SLOT_SIZE, TEXTURE_SIZE, TEXTURE_SIZE);
+
+                int texU = LARGE_SLOT_U;
+                int texV = LARGE_SLOT_V;
+
+                // If the current order is the one that is selected, add an offset
+                boolean isCurrentOrder = (parent.currentPlayerOrder == parent.getSelectedOrder());
+                texU += (isCurrentOrder) ? LARGE_GOLD_SLOT_U_OFFSET : 0;
+                texV += (isCurrentOrder) ? LARGE_GOLD_SLOT_V_OFFSET : 0;
+
+                GlStateManager.disableLighting();
+                GuiAwakeningTable.drawModalRectWithCustomSizedTexture(parent.guiLeft + x, parent.guiTop + y, texU, texV, LARGE_SLOT_SIZE, LARGE_SLOT_SIZE, TEXTURE_SIZE, TEXTURE_SIZE);
 
                 // Draw order icon
                 joazlazer.mods.amc.client.render.RenderHelper.drawLargeOrderIcon(parent.guiLeft + x + LARGE_SLOT_ICON_OFFSET, parent.guiTop + y + LARGE_SLOT_ICON_OFFSET, parent.getSelectedOrder());
+                GlStateManager.disableLighting();
 
                 // Draw order name text
                 GlStateManager.pushMatrix(); {
                     GlStateManager.scale(2.0f, 2.0f, 1.0f);
-                    parent.fontRenderer.drawStringWithShadow(parent.getSelectedOrder().getName(), (float)(parent.guiLeft + x + ORDER_NAME_X) / 2f, (float)(parent.guiTop + y + ORDER_NAME_Y) / 2f, new Color(254, 242, 76).getRGB());
+                    parent.fontRenderer.drawStringWithShadow(parent.getSelectedOrder().getName(), (float)(parent.guiLeft + x + ORDER_NAME_X) / 2f, (float)(parent.guiTop + y + ORDER_NAME_Y) / 2f, yellowText.getRGB());
                     GlStateManager.scale(0.5f, 0.5f, 1.0f);
                 }
                 GlStateManager.popMatrix();
 
                 // Draw description text
-                Color grayText = new Color(130, 130, 130);
                 parent.drawString(parent.fontRenderer, GuiColor.ITALIC + parent.getSelectedOrder().getDescription(), parent.guiLeft + x + ORDER_NAME_X, parent.guiTop + y + ORDER_NAME_Y + 20, grayText.getRGB());
+                if(isCurrentOrder) parent.drawString(parent.fontRenderer, I18n.format("container." + Reference.MOD_ID + ":awakening_table.current_order_message"), parent.guiLeft + x + ORDER_NAME_X, parent.guiTop + y + ORDER_NAME_Y + 20 + ORDER_CURRENT_Y_OFFSET, yellowText.getRGB());
 
                 // Draw info text
-                Color lightGrayText = new Color(180, 180, 180);
-                int top = ORDER_INFO_Y + parent.guiTop + y;
+                int top = orderInfoY + parent.guiTop + y;
                 boolean renderWhite = true;
+                GlStateManager.enableBlend();
+                GlStateManager.enableAlpha();
                 for (ITextComponent line : lines) {
                     if (line != null) {
-                        GlStateManager.enableBlend();
-                        GlStateManager.enableAlpha();
                         Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(line.getFormattedText(), parent.guiLeft + x + ORDER_INFO_X, top, renderWhite ? whiteText.getRGB() : lightGrayText.getRGB());
-                        GlStateManager.disableAlpha();
-                        GlStateManager.disableBlend();
                     } else renderWhite = !renderWhite;
                     top += 10;
                 }
+                GlStateManager.disableAlpha();
+                GlStateManager.disableBlend();
             } else {
+                GlStateManager.disableLighting();
                 parent.drawString(parent.fontRenderer, GuiColor.ITALIC + I18n.format("container." + Reference.MOD_ID + ":awakening_table.select_message"), x + parent.guiLeft + SELECT_MESSAGE_OFFSET, y + parent.guiTop + SELECT_MESSAGE_OFFSET, whiteText.getRGB());
             }
         }

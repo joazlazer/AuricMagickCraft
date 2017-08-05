@@ -9,12 +9,9 @@ import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
-@SideOnly(Side.CLIENT)
 public class KeyHandler {
     public static DummyKeyBinding spellCast = new DummyKeyBinding(-99); // Default right click.
     public static DummyKeyBinding adj1 = new DummyKeyBinding(Keyboard.KEY_LEFT);

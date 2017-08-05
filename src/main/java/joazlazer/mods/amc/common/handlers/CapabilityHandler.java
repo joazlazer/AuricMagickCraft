@@ -1,6 +1,5 @@
 package joazlazer.mods.amc.common.handlers;
 
-import joazlazer.mods.amc.AuricMagickCraft;
 import joazlazer.mods.amc.api.capability.PlayerCapabilityProvider;
 import joazlazer.mods.amc.api.capability.progression.CapabilityAmcProgressionHandler;
 import joazlazer.mods.amc.common.reference.Reference;

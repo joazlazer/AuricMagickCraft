@@ -9,6 +9,7 @@ item.amc:chrysoprase_gem.name=Polished Chrysoprase
 
 #Containers
 container.amc:awakening_table.select_message=Select an order from the left panel to view details
+container.amc:awakening_table.current_order_message=(Current order)
 container.amc:awakening_table.awaken=Awaken
 
 # Order Names
