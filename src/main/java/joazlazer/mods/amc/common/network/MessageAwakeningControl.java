@@ -16,6 +16,12 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
+/**
+* This class implements the packets neccessary for the Awakening ritual
+* Upon opening the GUI, the client sends a CAN_AWAKEN packet, and gets a REPLY packet sent from the server with the answer (canAwaken)
+* Upon activating the Awakening ritual via the GUI, the client sends a START packet
+* After the ritual has completed, the client sends an END packet with the new order, and gets a FINALIZE packet sent from the server telling it to close GuiAwakeningScreen
+*/
 public class MessageAwakeningControl implements IMessage {
     public enum ControlType {
         CAN_AWAKEN,
