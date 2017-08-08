@@ -2,14 +2,20 @@ package joazlazer.mods.amc.common.network;
 
 import io.netty.buffer.ByteBuf;
 import joazlazer.mods.amc.AuricMagickCraft;
+import joazlazer.mods.amc.api.capability.aura.CapabilityAuraHandler;
+import joazlazer.mods.amc.api.capability.aura.IAuraHandler;
 import joazlazer.mods.amc.api.capability.progression.CapabilityAmcProgressionHandler;
 import joazlazer.mods.amc.api.capability.progression.IAmcProgressionHandler;
 import joazlazer.mods.amc.api.order.OrderBase;
 import joazlazer.mods.amc.client.gui.GuiAwakeningScreen;
 import joazlazer.mods.amc.client.gui.GuiAwakeningTable;
+import joazlazer.mods.amc.common.utility.EntityUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionEffect;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
@@ -17,7 +23,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 /**
-* This class implements the packets neccessary for the Awakening ritual
+* This class implements the packets necessary for the Awakening ritual
 * Upon opening the GUI, the client sends a CAN_AWAKEN packet, and gets a REPLY packet sent from the server with the answer (canAwaken)
 * Upon activating the Awakening ritual via the GUI, the client sends a START packet
 * After the ritual has completed, the client sends an END packet with the new order, and gets a FINALIZE packet sent from the server telling it to close GuiAwakeningScreen
@@ -91,7 +97,7 @@ public class MessageAwakeningControl implements IMessage {
                 GuiScreen currentScreen = Minecraft.getMinecraft().currentScreen;
                 if(message.type == ControlType.FINALIZE) {
                     if(currentScreen instanceof GuiAwakeningScreen) {
-                        ((GuiAwakeningScreen)currentScreen).finalizeAwakening();
+                        Minecraft.getMinecraft().addScheduledTask(((GuiAwakeningScreen) currentScreen)::finalizeAwakening);
                     }
                 } else if(message.type == ControlType.REPLY) {
                     if(currentScreen instanceof GuiAwakeningTable && currentScreen != null) {
@@ -114,16 +120,27 @@ public class MessageAwakeningControl implements IMessage {
                     }
                     return new MessageAwakeningControl(ControlType.REPLY, order, canAwaken);
                 } else if(message.type == ControlType.START) {
-                    // TODO I want to set player invulnerable: how to prevent exploitation?
+                    // TODO I want to set player invulnerable: how to prevent exploitation? Container check?
                 } else if(message.type == ControlType.END) {
-                    player.getServerWorld().addScheduledTask((() -> {
-                        if(amcProgressionHandler != null) {
+                    final IAuraHandler auraHandler = player.getCapability(CapabilityAuraHandler.AURA_HANDLER, null);
+                    player.getServerWorld().addScheduledTask(() -> {
+                        if(amcProgressionHandler != null && auraHandler != null) {
                             amcProgressionHandler.setAwakened(true);
+                            auraHandler.setAuraUnits(auraHandler.getMaxAuraUnits() / 4f);
+                            if(EntityUtils.respawnPlayerToBed(player)) {
+                                // Respawned to bed
+                                player.addPotionEffect(new PotionEffect(Potion.getPotionFromResourceLocation("nausea"), 36));
+
+                            } else {
+                                // Did not return to bed
+                                player.addPotionEffect(new PotionEffect(Potion.getPotionFromResourceLocation("nausea"), 100));
+                            }
                             if(message.orderBase != null) amcProgressionHandler.setOrder(message.orderBase);
+                            // TODO Spawn Guidebook
                             else AuricMagickCraft.logger.error(String.format("[MessageAwakeningEndHandler.onMessage(...)] Received invalid order message from Player '%s'.", player.getDisplayNameString()));
                         }
-                        else AuricMagickCraft.logger.error(String.format("[MessageAwakeningEndHandler.onMessage(...)] Player '%s' does not have AMC Progression data (this should have been attached on spawn).", player.getDisplayNameString()));
-                    }));
+                        else AuricMagickCraft.logger.error(String.format("[MessageAwakeningEndHandler.onMessage(...)] Player '%s' does not have full AMC Player capability data (this should have been attached on spawn).", player.getDisplayNameString()));
+                    });
                     return new MessageAwakeningControl(ControlType.FINALIZE);
                 }
                 return null;

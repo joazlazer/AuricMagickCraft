@@ -1,17 +1,16 @@
 package joazlazer.mods.amc.api.capability.progression;
 
-import joazlazer.mods.amc.AuricMagickCraft;
 import joazlazer.mods.amc.api.order.OrderBase;
 import net.minecraft.nbt.NBTBase;
 import net.minecraftforge.common.util.INBTSerializable;
 
 /**
- * Default implementation (should be the only one needed) of <code>IAmcProgressionHandler</code>
+ * Default implementation of <code>IAmcProgressionHandler</code> intended for entity attachment
  */
-public class AmcProgressionHandler implements IAmcProgressionHandler, INBTSerializable<NBTBase>{
+public class EntityAmcProgressionHandler implements IAmcProgressionHandler, INBTSerializable<NBTBase> {
     private boolean isAwakened;
     private OrderBase orderBase;
-    public AmcProgressionHandler() {
+    public EntityAmcProgressionHandler() {
         isAwakened = false;
         orderBase = null;
     }
@@ -48,6 +47,6 @@ public class AmcProgressionHandler implements IAmcProgressionHandler, INBTSerial
 
     @Override
     public String toString() {
-        return "AmcProgressionHandler[isAwakened:" + getIsAwakened() + ",order:" + String.valueOf(this.orderBase) + "]";
+        return String.format("EntityAmcProgressionHandler[isAwakened:%s,order:%s]", String.valueOf(getIsAwakened()), String.valueOf(this.orderBase));
     }
 }

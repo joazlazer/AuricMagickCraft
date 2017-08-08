@@ -26,7 +26,7 @@ public class CapabilityAmcProgressionHandler {
             public void readNBT(Capability<IAmcProgressionHandler> capability, IAmcProgressionHandler instance, EnumFacing side, NBTBase nbt) {
                 deserialize(instance, nbt);
             }
-        }, AmcProgressionHandler::new);
+        }, EntityAmcProgressionHandler::new);
     }
 
     public static NBTBase serialize(IAmcProgressionHandler instance) {

@@ -1,0 +1,21 @@
+<book title="Philosophica Magorum" cover="gbook:covers/default" fontSize="0.6">
+    <include ref="gbook:xml/standard.xml" />
+    <include ref="gbook:xml/custom_elements.xml" />
+    <chapter>
+        <page>
+            <space height="33%" />
+            <p scale="2.5" align="center">Philosophica</p>
+            <p scale="2.5" align="center">Magorum</p>
+            <divider/>
+            <p align="center" scale="1.5" color="404040">by joazlazer</p>
+        </page>
+        <page>
+            <page_title>
+                <p>Table of Contents</p>
+            </page_title>
+            <p>Paragraph 1</p>
+            <p>Paragraph 2</p>
+            <p>Paragraph 3</p>
+        </page>
+    </chapter>
+</book>

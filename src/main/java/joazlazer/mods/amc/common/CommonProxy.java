@@ -17,10 +17,8 @@ public class CommonProxy {
 
     public void init(FMLInitializationEvent e) {
         NetworkRegistry.INSTANCE.registerGuiHandler(AuricMagickCraft.instance, new GuiProxy());
-        CapabilityHandler handler = new CapabilityHandler();
-        handler.register();
-        MinecraftForge.EVENT_BUS.register(handler);
         NetworkHandler.registerPackets();
+        (new CapabilityHandler()).register();
     }
 
     public void postInit(FMLPostInitializationEvent e) {

@@ -16,7 +16,7 @@ public class GuiAwakeningScreen extends GuiScreen {
     private static final float SHAKE_TICKS = 1f;
     private static final float SHAKE_MIN = 0.2f;
     private static final float SHAKE_MAX = 5f;
-    private static final int FADE_OUT_MAX = 8;
+    private static final int FADE_OUT_MAX = 14;
 
     private final float yawTarget;
     private final float pitchTarget;
@@ -29,6 +29,7 @@ public class GuiAwakeningScreen extends GuiScreen {
     private boolean renderWhiteScreen = false;
 
     TileEntityAwakeningTable te = null;
+    public boolean canClose = false;
 
     public GuiAwakeningScreen(TileEntityAwakeningTable te) {
         this.te = te;
@@ -44,6 +45,12 @@ public class GuiAwakeningScreen extends GuiScreen {
     }
 
     @Override
+    public void onGuiClosed() {
+        super.onGuiClosed();
+        Minecraft.getMinecraft().mouseHelper.ungrabMouseCursor();
+    }
+
+    @Override
     public boolean doesGuiPauseGame() {
         return false;
     }
@@ -51,8 +58,12 @@ public class GuiAwakeningScreen extends GuiScreen {
     @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException {
         if(keyCode == 1) {
-            // Esc pressed, kill player
-            System.out.println("Dead");
+            if(canClose) {
+                Minecraft.getMinecraft().displayGuiScreen(null);
+            } else {
+                // Esc pressed, kill player
+                System.out.println("Dead");
+            }
         }
     }
 
@@ -143,6 +154,7 @@ public class GuiAwakeningScreen extends GuiScreen {
 
         if(fadeOutTicks == 0) {
             // Close
+            canClose = true;
             Minecraft.getMinecraft().displayGuiScreen(null);
         }
     }

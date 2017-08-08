@@ -1,5 +1,6 @@
 package joazlazer.mods.amc.client.render.item;
 
+import joazlazer.mods.amc.AuricMagickCraft;
 import joazlazer.mods.amc.common.item.ModItems;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
@@ -9,7 +10,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 
-@Mod.EventBusSubscriber(Side.CLIENT)
+@Mod.EventBusSubscriber(modid = AuricMagickCraft.MODID, value = Side.CLIENT)
 public class ModItemRenderers {
     @SubscribeEvent
     public static void registerItemRenderers(ModelRegistryEvent e) {

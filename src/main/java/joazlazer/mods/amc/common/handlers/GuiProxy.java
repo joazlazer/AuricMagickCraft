@@ -1,12 +1,16 @@
 package joazlazer.mods.amc.common.handlers;
 
+import joazlazer.mods.amc.client.gui.GuiAwakeningScreen;
 import joazlazer.mods.amc.client.gui.GuiAwakeningTable;
 import joazlazer.mods.amc.common.container.ContainerAwakeningTable;
 import joazlazer.mods.amc.common.tileentity.TileEntityAwakeningTable;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.client.event.GuiOpenEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.IGuiHandler;
 
 import javax.annotation.Nullable;
